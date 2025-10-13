@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Nhà hàng siêu cấp VIP PRO</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sidebar .menu a {
+      display: block;
+      padding: 15px 20px;
+      color: #000;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .sidebar .menu a.active, 
+    .sidebar .menu a:hover {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .sidebar .logout {
+      padding: 15px 20px;
+    }
+
+    .sidebar .logout a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .main-content {
+      flex: 1;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-top: 10px;
+      color: #222;
+    }
+
+    .filter {
+      margin: 20px 0;
+    }
+
+    select {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    .tables {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      justify-items: center;
+      margin-top: 40px;
+    }
+
+    .table-item {
+      width: 180px;
+      height: 120px;
+      border: 2px solid #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      color: #000;
+      font-size: 30px;
+      font-weight: bold;
+      transition: 0.2s;
+      border-radius: 10px;
+    }
+
+    .table-item:hover {
+      background: #007bff;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="menu">
+      <a href="/home_nv" class="active">
+        <i class="fa fa-home"></i> Trang chủ
+      </a>
+      <a href="/thongtin_nv">
+        <i class="fa fa-user"></i> Thông tin cá nhân
+      </a>
+    </div>
+    <div class="logout">
+      <a href="/logout" class="logout-btn">Đăng xuất</a>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <h1>NHÀ HÀNG SIÊU CẤP VIP PRO</h1>
+
+    <div class="filter">
+      <label for="floor">Chọn tầng: </label>
+      <select id="floor" name="floor">
+        <option value="1">Tầng 1</option>
+        <option value="2">Tầng 2</option>
+        <option value="3">Tầng 3</option>
+      </select>
+    </div>
+
+    <div id="tableContainer" class="tables"></div>
+  </div>
+
+  <script>
+  const tableContainer = document.getElementById('tableContainer');
+  const floorSelect = document.getElementById('floor');
+
+  // Hàm render bàn theo tầng (mỗi tầng 9 bàn: 101-109, 201-209, 301-309)
+  function renderTables(floor) {
+    tableContainer.innerHTML = '';
+
+    for (let i = 1; i <= 9; i++) {
+      const tableNum = floor * 100 + i; // 101,102,...,301...
+      const table = document.createElement('a');
+      table.href = `/order_nv/${tableNum}`;
+      table.className = 'table-item';
+      table.textContent = tableNum;
+      tableContainer.appendChild(table);
+    }
+  }
+
+  // Mặc định tầng 1
+  renderTables(1);
+
+  // Khi chọn tầng khác
+  floorSelect.addEventListener('change', (e) => {
+    renderTables(parseInt(e.target.value));
+  });
+</script>
+</body>
+</html>

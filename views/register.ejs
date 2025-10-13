@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng ký tài khoản</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .register-card {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      width: 400px;
+      position: relative;
+    }
+
+    .register-card h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    .register-card label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    .register-card input, 
+    .register-card select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .register-card button {
+      width: 100%;
+      padding: 12px;
+      background: #28a745;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .register-card button:hover {
+      background: #218838;
+    }
+
+    /* Alert popup */
+    .alert {
+      position: absolute;
+      top: -90px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      min-width: 300px;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 10;
+    }
+    .alert-show { opacity: 1; pointer-events: auto; }
+
+    .alert-error { background: #dc3545; color: white; }
+    .alert-success { background: #28a745; color: white; }
+  </style>
+</head>
+<body>
+  <div class="register-card">
+    <h2><i class="fa fa-user-plus"></i> Đăng ký tài khoản</h2>
+
+    <div id="alertBox" class="alert"></div>
+
+    <form id="registerForm" action="/register" method="POST">
+      <label>Họ tên:</label>
+      <input type="text" name="HoTen" placeholder="Nhập họ tên" required>
+
+      <label>Số điện thoại:</label>
+      <input type="text" name="SDT" placeholder="Nhập số điện thoại">
+
+      <label>Gmail:</label>
+      <input type="email" name="Gmail" placeholder="Nhập email">
+
+      <label>CCCD:</label>
+      <input type="text" name="CCCD" placeholder="Nhập CCCD">
+
+      <label>Tài khoản:</label>
+      <input type="text" name="TaiKhoan" placeholder="Tên đăng nhập" required>
+
+      <label>Mật khẩu:</label>
+      <input type="password" name="MatKhau" placeholder="Nhập mật khẩu" required>
+
+      <label>Vai trò:</label>
+      <select name="IDVaiTro" required>
+        <% roles.forEach(role => { %>
+          <option value="<%= role.IDVaiTro %>"><%= role.TenVaiTro %></option>
+        <% }) %>
+      </select>
+
+      <button type="submit">Đăng ký</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const alertBox = document.getElementById('alertBox');
+
+    function showAlert(message, type="error") {
+      alertBox.innerHTML = message.replace(/\n/g, '<br>');
+      alertBox.className = 'alert alert-' + type + ' alert-show';
+      setTimeout(() => {
+        alertBox.className = 'alert alert-' + type;
+      }, 4000);
+    }
+
+    form.addEventListener('submit', function(e) {
+      const HoTen = form.HoTen.value.trim();
+      const SDT = form.SDT.value.trim();
+      const Gmail = form.Gmail.value.trim();
+      const CCCD = form.CCCD.value.trim();
+      const TaiKhoan = form.TaiKhoan.value.trim();
+      const MatKhau = form.MatKhau.value.trim();
+
+      let errors = [];
+
+      // Gmail đúng định dạng
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(Gmail)) errors.push("❌ Gmail không đúng định dạng");
+
+      // SDT 10 chữ số
+      const sdtRegex = /^\d{10}$/;
+      if (SDT && !sdtRegex.test(SDT)) errors.push("❌ SĐT phải gồm 10 chữ số");
+
+      // CCCD 12 chữ số
+      const cccdRegex = /^\d{12}$/;
+      if (CCCD && !cccdRegex.test(CCCD)) errors.push("❌ CCCD phải gồm 12 chữ số");
+
+      // Họ tên >= 3 ký tự
+      if (HoTen.length < 3) errors.push("❌ Họ tên phải ít nhất 3 ký tự");
+
+      // Tài khoản >= 3 ký tự
+      if (TaiKhoan.length < 3) errors.push("❌ Tài khoản phải ít nhất 3 ký tự");
+
+      // Mật khẩu >= 6 ký tự
+      if (MatKhau.length < 6) errors.push("❌ Mật khẩu phải ít nhất 6 ký tự");
+
+      if (errors.length > 0) {
+        e.preventDefault();
+        showAlert(errors.join("\n"));
+      }
+    });
+  </script>
+</body>
+</html>

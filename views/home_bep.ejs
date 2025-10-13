@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang bếp - Nhà hàng VIP PRO</title>
+  <link rel="stylesheet" href="/css/home_bep.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h3>🍳 BẾP</h3>
+      </div>
+
+      <ul class="menu">
+        <li class="active"><i class="fa-solid fa-house"></i> <a href="#">Trang chủ</a></li>
+        <li><i class="fa-solid fa-user"></i> <a href="#">Thông tin cá nhân</a></li>
+      </ul>
+
+      <div class="logout">
+        <a href="/logout">Đăng xuất</a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <h1>NHÀ HÀNG SIÊU CẤP VIP PRO</h1>
+      <div class="ban-list">
+        <% if (banList && banList.length > 0) { %>
+          <% banList.forEach(ban => { %>
+            <div class="ban-item">
+              <h3>Bàn <%= ban.SoBan %></h3>
+              <ul>
+                <% ban.monAn.forEach(mon => { %>
+                  <li><%= mon.TenMon %> - <%= mon.SoLuong %> phần</li>
+                <% }) %>
+              </ul>
+              <button class="done-btn" onclick="hoanThanh('<%= ban.SoBan %>')">Xong</button>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p>Hiện chưa có đơn hàng nào cần chế biến.</p>
+        <% } %>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function hoanThanh(soBan) {
+      if (confirm(`Xác nhận hoàn thành món của bàn ${soBan}?`)) {
+        fetch(`/bep/hoan-thanh/${soBan}`, { method: "POST" })
+          .then(res => res.text())
+          .then(msg => alert(msg))
+          .catch(err => console.error(err));
+      }
+    }
+  </script>
+</body>
+</html>

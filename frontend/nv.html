@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Nhà Hàng Siêu Cấp VIP PRO</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      background-color: #fff;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 28px;
+      font-weight: bold;
+      border-bottom: 1px solid #ccc;
+    }
+
+    /* Layout chính: sidebar + content */
+    .container {
+      display: flex;
+      flex: 1;
+      height: 100%;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 200px;
+      background-color: #fff;
+      border-right: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .menu-item {
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .menu-item:hover,
+    .active {
+      background-color: #0078ff;
+      color: white;
+    }
+
+    .menu-item i {
+      margin-right: 10px;
+    }
+
+    .logout {
+      padding: 10px 20px;
+      text-align: left;
+      color: #0078ff;
+      cursor: pointer;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    select {
+      padding: 5px;
+      font-size: 16px;
+    }
+
+    /* Table grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 200px);
+      grid-gap: 20px;
+    }
+
+    .table {
+      background-color: white;
+      border: 1px solid #ccc;
+      text-align: center;
+      padding: 50px 0;
+      font-size: 24px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .table:hover {
+      background-color: #0078ff;
+      color: white;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">NHÀ HÀNG SIÊU CẤP VIP PRO</div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div>
+        <div class="menu-item active"><i>🏠</i> Trang chủ</div>
+        <div class="menu-item"><i>👤</i> Thông tin cá nhân</div>
+      </div>
+      <div class="logout">Đăng xuất</div>
+    </div>
+
+    <div class="main">
+      <div class="controls">
+        <label for="floor">Chọn tầng: </label>
+        <select id="floor">
+          <option value="1">Tầng 1</option>
+          <option value="2">Tầng 2</option>
+          <option value="3">Tầng 3</option>
+        </select>
+      </div>
+
+      <div class="grid" id="tableGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    const tableGrid = document.getElementById("tableGrid");
+    const floorSelect = document.getElementById("floor");
+
+    function renderTables(floor) {
+      tableGrid.innerHTML = "";
+      const start = floor * 100 + 1;
+      const end = start + 8;
+      for (let i = start; i <= end; i++) {
+        const table = document.createElement("div");
+        table.className = "table";
+        table.textContent = i;
+        tableGrid.appendChild(table);
+      }
+    }
+
+    floorSelect.addEventListener("change", (e) => {
+      renderTables(parseInt(e.target.value));
+    });
+
+    renderTables(1);
+  </script>
+
+</body>
+</html>
