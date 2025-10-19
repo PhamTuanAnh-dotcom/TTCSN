@@ -36,7 +36,7 @@ const homeQLRoutes = require("./routes/home_ql");
 
 app.use("/", authRoutes);
 app.use("/order", orderRoutes);
-app.use("/staff", staffRoutes);
+app.use("/", staffRoutes);
 app.use("/home_ql", homeQLRoutes);
 
 // Trang mặc định

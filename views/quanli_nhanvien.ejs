@@ -45,22 +45,22 @@
       <h3>Thông tin nhân viên</h3>
     </div>
 
-    <form action="/capnhat_nhanvien/<%= nhanVien.ID %>" method="POST">
+    <form action="/capnhat_nhanvien/<%= TaiKhoan.ID %>" method="POST">
       <div class="row mb-3">
         <div class="col">
           <label>Họ và tên</label>
-          <input type="text" class="form-control" value="<%= nhanVien.HoTen %>" disabled>
+          <input type="text" class="form-control" value="<%= TaiKhoan.HoTen %>" disabled>
         </div>
         <div class="col">
           <label>Mã nhân viên</label>
-          <input type="text" class="form-control" value="<%= nhanVien.ID %>" disabled>
+          <input type="text" class="form-control" value="<%= TaiKhoan.ID %>" disabled>
         </div>
       </div>
 
       <div class="row mb-3">
         <div class="col">
           <label>Số điện thoại</label>
-          <input type="text" class="form-control" value="<%= nhanVien.SDT %>" disabled>
+          <input type="text" class="form-control" value="<%= TaiKhoan.SDT %>" disabled>
         </div>
         <div class="col">
           <label>Số tầng</label>
@@ -70,7 +70,7 @@
 
       <div class="mb-3">
         <label>Số CCCD</label>
-        <input type="text" class="form-control" value="<%= nhanVien.CCCD %>" disabled>
+        <input type="text" class="form-control" value="<%= TaiKhoan.CCCD %>" disabled>
       </div>
 
       <div class="mb-3">
@@ -79,9 +79,9 @@
       </div>
 
       <div class="btn-area">
-        <a href="/register" class="btn btn-success">➕ Tạo tài khoản</a>
         <button type="submit" class="btn btn-primary">Gửi</button>
-        <a href="/xoa_nhanvien/<%= nhanVien.ID %>" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa tài khoản này không?')">Xóa tài khoản</a>
+        <a href="/dsnhanvien" class="btn btn-secondary">Quay lại</a>
+        <a href="/xoanhanvien/<%= TaiKhoan.ID %>" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa tài khoản này không?')">Xóa tài khoản</a>
       </div>
     </form>
   </div>
