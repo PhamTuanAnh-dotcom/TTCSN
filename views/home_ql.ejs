@@ -98,6 +98,72 @@
       color: white;
       border-color: #16a085;
     }
+     .profile-card {
+      max-width: 600px;
+      margin: 60px auto;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      background: white;
+      padding: 30px;
+    }
+    .profile-card h3 {
+      color: #0d6efd;
+      font-weight: 600;
+    }
+    .form-section {
+      margin-top: 40px;
+      border-top: 1px solid #ddd;
+      padding-top: 30px;
+    }
+    .btn-custom {
+      background-color: #0d6efd;
+      color: white;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+    .btn-custom:hover {
+      background-color: #0b5ed7;
+    }
+    .offcanvas-panel {
+  position: fixed;
+  top: 0;
+  right: -400px; /* ẩn ngoài màn hình */
+  width: 380px;
+  height: 100%;
+  background: white;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  overflow-y: auto;
+  padding: 20px;
+  z-index: 2000;
+}
+
+.offcanvas-panel.active {
+  right: 0; /* trượt vào màn hình */
+}
+
+.offcanvas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.offcanvas-header .btn-close {
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #333;
+}
+#profilePanel {
+  display: none;
+}
+
+#profilePanel.active {
+  display: block;
+  right: 0;
+}
+
   </style>
 </head>
 
@@ -107,7 +173,7 @@
     <div class="menu">
       <a href="#" class="active">🏠 Trang chủ</a>
       <a href="#">👤 Thông tin cá nhân</a>
-      <a href="/quanli_nhanvien">⚙️ Quản lí nhân viên</a>
+      <a href="/staff">⚙️ Quản lí nhân viên</a>
     </div>
     <div class="logout">
       <a href="/logout" class="logout-btn" style="color:#f39c12; text-decoration:none;">🚪 Đăng xuất</a>
@@ -130,9 +196,44 @@
     <div class="table-grid" id="tableGrid">
       <!-- Bàn sẽ được hiển thị ở đây -->
     </div>
+  </div> 
+<!-- Offcanvas thông tin cá nhân -->
+<div id="profilePanel" class="offcanvas-panel">
+  <div class="offcanvas-header">
+    <h5>👤 Thông tin Quản lý</h5>
+    <button id="closePanel" class="btn-close">&times;</button>
   </div>
+  <div class="offcanvas-body">
+    <p><strong>Họ tên:</strong> <%= manager.HoTen %></p>
+    <p><strong>Số điện thoại:</strong> <%= manager.SDT %></p>
+    <p><strong>Email:</strong> <%= manager.Gmail %></p>
+    <p><strong>CCCD:</strong> <%= manager.CCCD %></p>
+    <p><strong>Tài khoản:</strong> <%= manager.TaiKhoan %></p>
 
-  <script>
+    <hr>
+    <h6>Cập nhật thông tin</h6>
+    <form action="/home_ql/update" method="POST">
+      <div class="mb-2">
+        <label class="form-label">Họ tên</label>
+        <input type="text" name="HoTen" class="form-control" value="<%= manager.HoTen %>">
+      </div>
+      <div class="mb-2">
+        <label class="form-label">SĐT</label>
+        <input type="text" name="SDT" class="form-control" value="<%= manager.SDT %>">
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Email</label>
+        <input type="email" name="Gmail" class="form-control" value="<%= manager.Gmail %>">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">CCCD</label>
+        <input type="text" name="CCCD" class="form-control" value="<%= manager.CCCD %>">
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Lưu thay đổi</button>
+    </form>
+  </div>
+</div>
+<script>
     const tableGrid = document.getElementById('tableGrid');
     const floorSelect = document.getElementById('floorSelect');
 
@@ -156,6 +257,101 @@
     floorSelect.addEventListener('change', e => {
       renderTables(parseInt(e.target.value));
     });
+    // ✅ Dữ liệu quản lý từ server (Node truyền vào)
+    const manager = {
+    hoten: "<%= manager?.HoTen || '' %>",
+    sdt: "<%= manager?.SDT || '' %>",
+    gmail: "<%= manager?.Gmail || '' %>",
+    cccd: "<%= manager?.CCCD || '' %>",
+    manhanvien: "<%= manager?.ID || '' %>"
+  };
+  const contentArea = document.querySelector('.main-content');
+  const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      const text = link.textContent.trim();
+    // Nếu là "Quản lí nhân viên" thì để href hoạt động bình thường
+    if (text.includes('Quản lí nhân viên')) return;
+    // Còn các mục khác thì chặn
+    e.preventDefault();
+
+      // Bỏ active cũ và set active mới
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      if (text.includes('Trang chủ')) {
+        // Quay lại giao diện bàn
+        contentArea.innerHTML = `
+          <header>NHÀ HÀNG SIÊU CẤP VIP PRO</header>
+          <div class="floor-select">
+            <label for="floorSelect">Chọn tầng:</label>
+            <select id="floorSelect" class="form-select" style="width:150px;">
+              ${[1,2,3].map(i => `<option value="${i}">Tầng ${i}</option>`).join('')}
+            </select>
+          </div>
+          <div class="table-grid" id="tableGrid"></div>
+        `;
+
+        const floorSelect = document.getElementById('floorSelect');
+        const tableGrid = document.getElementById('tableGrid');
+
+        function renderTables(floor) {
+          tableGrid.innerHTML = '';
+          for (let i = 1; i <= 9; i++) {
+            const tableNumber = floor * 100 + i;
+            const div = document.createElement('div');
+            div.className = 'table-item';
+            div.textContent = `Bàn ${tableNumber}`;
+            div.onclick = () => window.location.href = `/order/${tableNumber}`;
+            tableGrid.appendChild(div);
+          }
+        }
+
+        renderTables(1);
+        floorSelect.addEventListener('change', e => {
+          renderTables(parseInt(e.target.value));
+        });
+      } 
+      else if (text.includes('Thông tin cá nhân')) {
+        // ✅ Hiển thị thông tin từ DB
+        contentArea.innerHTML = `
+          <header>THÔNG TIN CÁ NHÂN</header>
+          <div class="p-4">
+            <h5>👤 Thông tin Quản lý</h5>
+            <hr>
+            <p><strong>Họ tên:</strong> ${manager.hoten}</p>
+            <p><strong>Số điện thoại:</strong> ${manager.sdt}</p>
+            <p><strong>Email:</strong> ${manager.gmail}</p>
+            <p><strong>CCCD:</strong> ${manager.cccd}</p>
+            <p><strong>Mã nhân viên:</strong> ${manager.manhanvien}</p>
+            <button class="btn btn-primary edit-info">Chỉnh sửa</button>
+          </div>
+        `;
+      }
+    });
+  });
+  const profilePanel = document.getElementById("profilePanel");
+const closePanel = document.getElementById("closePanel");
+
+// Khi bấm vào “Thông tin cá nhân”
+document.querySelector('.sidebar a:nth-child(2)').addEventListener('click', e => {
+  e.preventDefault();
+
+  // Đợi một chút để DOM cập nhật xong
+  setTimeout(() => {
+    const editBtn = document.querySelector('.edit-info');
+    if (editBtn) {
+      editBtn.addEventListener('click', e2 => {
+        e2.preventDefault();
+        profilePanel.classList.add("active");
+      });
+    }
+  }, 100);
+});
+// Khi bấm nút X
+closePanel.addEventListener('click', () => {
+  profilePanel.classList.remove("active");
+});
   </script>
 </body>
 </html>

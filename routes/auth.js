@@ -43,8 +43,11 @@ router.post("/login", (req, res) => {
       }
 
       if (isMatch) {
-        req.session.user = user;
-
+        req.session.user = {
+          ID: user.ID,
+          HoTen: user.HoTen,
+          IDVaiTro: user.IDVaiTro
+          };
         switch (user.IDVaiTro) {
           case "QL": return res.redirect("/home_ql");
           case "NV": return res.redirect("/home_nv");
