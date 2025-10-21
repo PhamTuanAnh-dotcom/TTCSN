@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Sửa món ăn</title>
+</head>
+<body>
+  <h2 style="text-align:center;">Sửa món ăn</h2>
+  <form action="/menu/sua/<%= mon.MaMon %>" method="POST" style="width:300px;margin:auto;">
+    <label>Tên món:</label><br>
+    <input name="TenMon" value="<%= mon.TenMon %>" required><br>
+    <label>Loại:</label><br>
+    <select name="MaLoai">
+      <option value="">-- Chọn loại --</option>
+      <% loai.forEach(l => { %>
+        <option value="<%= l.MaLoai %>" <%= l.MaLoai === mon.MaLoai ? "selected" : "" %>><%= l.TenLoai %></option>
+      <% }) %>
+    </select><br>
+    <label>Giá bán:</label><br>
+    <input type="number" step="0.01" name="GiaBan" value="<%= mon.GiaBan %>" required><br>
+    <label>Trạng thái:</label><br>
+    <select name="TrangThai">
+      <option value="Con" <%= mon.TrangThai === 'Con' ? "selected" : "" %>>Còn</option>
+      <option value="Het" <%= mon.TrangThai === 'Het' ? "selected" : "" %>>Hết</option>
+    </select><br><br>
+    <button type="submit">Cập nhật</button>
+    <a href="/menu">Hủy</a>
+  </form>
+</body>
+</html>

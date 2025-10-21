@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý món ăn</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f3f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: linear-gradient(135deg, #ff7e5f, #feb47b);
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      width: 90%;
+      margin: 30px auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px 30px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .actions a.add-btn {
+      background: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .actions a.add-btn:hover {
+      background: #45a049;
+    }
+
+    .search-box input {
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 220px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #eee;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background: #f8f8f8;
+      color: #333;
+    }
+
+    tr:hover {
+      background: #fafafa;
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .edit-btn {
+      background: #2196F3;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #f44336;
+      color: white;
+    }
+
+    .edit-btn:hover { background: #0b7dda; }
+    .delete-btn:hover { background: #d32f2f; }
+
+    .status {
+      font-weight: bold;
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+
+    .status.Con {
+      background: #c8e6c9;
+      color: #256029;
+    }
+
+    .status.Het {
+      background: #ffcdd2;
+      color: #b71c1c;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      color: #555;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><i class="fa-solid fa-utensils"></i> Quản lý Menu Món Ăn</h1>
+  </header>
+
+  <div class="container">
+    <div class="actions">
+      <a href="/menu/them" class="add-btn"><i class="fa-solid fa-plus"></i> Thêm món mới</a>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Tìm món ăn...">
+      </div>
+    </div>
+
+    <table id="monanTable">
+      <thead>
+        <tr>
+          <th>Mã món</th>
+          <th>Tên món</th>
+          <th>Loại</th>
+          <th>Giá bán (VNĐ)</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% dsMonAn.forEach(mon => { %>
+          <tr>
+            <td><%= mon.MaMon %></td>
+            <td><%= mon.TenMon %></td>
+            <td><%= mon.TenLoai || 'Chưa phân loại' %></td>
+            <td><%= mon.GiaBan.toLocaleString() %></td>
+            <td><span class="status <%= mon.TrangThai %>"><%= mon.TrangThai %></span></td>
+            <td>
+              <a href="/menu/sua/<%= mon.MaMon %>" class="btn edit-btn"><i class="fa-solid fa-pen"></i></a>
+              <a href="/menu/xoa/<%= mon.MaMon %>" class="btn delete-btn" onclick="return confirm('Bạn có chắc muốn xóa món này không?')"><i class="fa-solid fa-trash"></i></a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    © 2025 Nhà hàng Siêu Cấp VIP PRO
+  </footer>
+
+  <script>
+    const searchInput = document.getElementById("searchInput");
+    const rows = document.querySelectorAll("#monanTable tbody tr");
+
+    searchInput.addEventListener("input", function() {
+      const keyword = this.value.toLowerCase();
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(keyword) ? "" : "none";
+      });
+    });
+  </script>
+</body>
+</html>

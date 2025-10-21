@@ -33,11 +33,13 @@ const authRoutes = require("./routes/auth");
 const staffRoutes = require("./routes/staff");
 const orderRoutes = require("./routes/order");
 const homeQLRoutes = require("./routes/home_ql"); 
+const menuRoutes = require("./routes/menu"); 
 
 app.use("/", authRoutes);
 app.use("/order", orderRoutes);
 app.use("/", staffRoutes);
 app.use("/home_ql", homeQLRoutes);
+app.use("/menu", menuRoutes);
 
 // Trang mặc định
 app.get("/", (req, res) => {
