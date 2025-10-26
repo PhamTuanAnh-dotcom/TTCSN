@@ -27,17 +27,21 @@
     <!-- Main content -->
     <main class="main">
       <h1>NHÀ HÀNG SIÊU CẤP VIP PRO</h1>
+
       <div class="ban-list">
-        <% if (banList && banList.length > 0) { %>
-          <% banList.forEach(ban => { %>
+        <% if (orders && orders.length > 0) { %>
+          <% orders.forEach(order => { %>
             <div class="ban-item">
-              <h3>Bàn <%= ban.SoBan %></h3>
+              <h3>Bàn <%= order.MaBan %></h3>
+              <p><strong>Mã Order:</strong> <%= order.MaOder %></p>
               <ul>
-                <% ban.monAn.forEach(mon => { %>
-                  <li><%= mon.TenMon %> - <%= mon.SoLuong %> phần</li>
+                <% order.monAnList.forEach(mon => { %>
+                  <li>
+                    <%= mon.TenMon %> - <%= mon.SoLuong %> phần
+                  </li>
                 <% }) %>
               </ul>
-              <button class="done-btn" onclick="hoanThanh('<%= ban.SoBan %>')">Xong</button>
+              <button class="done-btn" onclick="hoanThanh('<%= order.MaOder %>')">Hoàn thành</button>
             </div>
           <% }) %>
         <% } else { %>
@@ -48,9 +52,9 @@
   </div>
 
   <script>
-    function hoanThanh(soBan) {
-      if (confirm(`Xác nhận hoàn thành món của bàn ${soBan}?`)) {
-        fetch(`/bep/hoan-thanh/${soBan}`, { method: "POST" })
+    function hoanThanh(maOder) {
+      if (confirm(`Xác nhận hoàn thành order ${maOder}?`)) {
+        fetch(`/bep/hoan-thanh/${maOder}`, { method: "POST" })
           .then(res => res.text())
           .then(msg => alert(msg))
           .catch(err => console.error(err));

@@ -54,7 +54,7 @@ router.get("/xoanhanvien/:id", (req, res) => {
     }
 
     // Xóa thành công → quay về danh sách
-    res.redirect("/dsnhanvien");
+    res.redirect("/staff/dsnhanvien");
   });
 });
 module.exports = router;

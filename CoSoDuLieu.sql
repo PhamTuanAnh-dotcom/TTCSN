@@ -66,28 +66,30 @@ CREATE TABLE ThanhToan (
     TongTien DECIMAL(12,2) NOT NULL,
     PhuongThuc ENUM('Tien mat','The','Vi dien tu') NOT NULL,
     TrangThaiThanhToan ENUM('Da thanh toan','Chua thanh toan') DEFAULT 'Chua thanh toan',
-    NhanVienID VARCHAR(50),
+    TaiKhoanID VARCHAR(50),
     BanAnID VARCHAR(50),
-    FOREIGN KEY (NhanVienID) REFERENCES TaiKhoan(ID)
+    FOREIGN KEY (TaiKhoanID) REFERENCES TaiKhoan(ID)
         ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (BanAnID) REFERENCES BanAn(MaBan)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Bảng Order (đặt món)
 CREATE TABLE Oder (
     MaOder VARCHAR(50) PRIMARY KEY,
     ThoiGian DATETIME NOT NULL,
     TaiKhoanID VARCHAR(50),       -- Nhân viên phục vụ
     MaHD VARCHAR(50),             -- Hóa đơn liên kết
-    NhanVienBepID VARCHAR(50),    -- Bếp nhận order
+    MaBan VARCHAR(50),            -- Vị trí bàn đặt
     FOREIGN KEY (TaiKhoanID) REFERENCES TaiKhoan(ID)
         ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (MaHD) REFERENCES ThanhToan(MaHD)
         ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (NhanVienBepID) REFERENCES TaiKhoan(ID)
-        ON DELETE SET NULL ON UPDATE CASCADE
+    FOREIGN KEY (MaBan) REFERENCES BanAn(MaBan)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Bảng chi tiết Order - Món ăn
 CREATE TABLE Oder_Monan (
     MaOder VARCHAR(50),
     MaMon VARCHAR(50),
@@ -103,7 +105,13 @@ INSERT INTO VaiTro (IDVaiTro, TenVaiTro) VALUES
 ('NV', 'Nhân viên phục vụ'),
 ('BEP', 'Nhân viên bếp');
 select * from VaiTro
-select * from TaiKhoan
+select * from LoaiMon
+INSERT INTO LoaiMon (MaLoai, TenLoai) VALUES
+('M01', 'Nướng'),
+('M02', 'Lẩu'),
+('M03', 'Khai Vị'),
+('M04','Tráng Miệng');
+drop table ThanhToan;
 
 
 

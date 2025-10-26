@@ -91,7 +91,7 @@
 
     <div id="alertBox" class="alert"></div>
 
-    <form id="registerForm" action="/register" method="POST">
+    <form id="registerForm" action="/auth/register" method="POST">
       <label>Họ tên:</label>
       <input type="text" name="HoTen" placeholder="Nhập họ tên" required>
 
@@ -145,24 +145,42 @@
 
       // Gmail đúng định dạng
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(Gmail)) errors.push("❌ Gmail không đúng định dạng");
+      if (!emailRegex.test(Gmail)) {
+      errors.push("❌ Gmail không đúng định dạng");
+      alert("❌ Gmail không đúng định dạng");
+    }
 
       // SDT 10 chữ số
       const sdtRegex = /^\d{10}$/;
-      if (SDT && !sdtRegex.test(SDT)) errors.push("❌ SĐT phải gồm 10 chữ số");
+      if (SDT && !sdtRegex.test(SDT)) {
+        errors.push("❌ SĐT phải gồm 10 chữ số");
+        alert("❌ SĐT phải gồm 10 chữ số");
+      }
 
       // CCCD 12 chữ số
       const cccdRegex = /^\d{12}$/;
-      if (CCCD && !cccdRegex.test(CCCD)) errors.push("❌ CCCD phải gồm 12 chữ số");
+      if (CCCD && !cccdRegex.test(CCCD)) {
+        errors.push("❌ CCCD phải gồm 12 chữ số");
+        alert("❌ CCCD phải gồm 12 chữ số");
+      }
 
       // Họ tên >= 3 ký tự
-      if (HoTen.length < 3) errors.push("❌ Họ tên phải ít nhất 3 ký tự");
+      if (HoTen.length < 3) {
+        errors.push("❌ Họ tên phải ít nhất 3 ký tự");
+        alert("❌ Họ tên phải ít nhất 3 ký tự");
+      }
 
       // Tài khoản >= 3 ký tự
-      if (TaiKhoan.length < 3) errors.push("❌ Tài khoản phải ít nhất 3 ký tự");
+      if (TaiKhoan.length < 3) {
+        errors.push("❌ Tài khoản phải ít nhất 3 ký tự");
+        alert("❌ Tài khoản phải ít nhất 3 ký tự");
+      }
 
       // Mật khẩu >= 6 ký tự
-      if (MatKhau.length < 6) errors.push("❌ Mật khẩu phải ít nhất 6 ký tự");
+      if (MatKhau.length < 6) {
+        errors.push("❌ Mật khẩu phải ít nhất 6 ký tự");
+        alert("❌ Mật khẩu phải ít nhất 6 ký tự");
+      }
 
       if (errors.length > 0) {
         e.preventDefault();

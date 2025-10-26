@@ -3,30 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <title>Thêm món ăn</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+      font-family: Arial, sans-serif;
+    }
+    .form-container {
+      max-width: 420px;
+      margin: 60px auto;
+      padding: 25px 30px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: bold;
+      color: #333;
+    }
+    label {
+      font-weight: 500;
+      margin-top: 10px;
+    }
+    .btn-primary {
+      width: 100%;
+      margin-top: 15px;
+    }
+    .btn-secondary {
+      width: 100%;
+      margin-top: 10px;
+      background: #6c757d;
+    }
+  </style>
 </head>
 <body>
-  <h2 style="text-align:center;">Thêm món ăn</h2>
-  <form action="/menu/them" method="POST" style="width:300px;margin:auto;">
-    <label>Mã món:</label><br>
-    <input name="MaMon" required><br>
-    <label>Tên món:</label><br>
-    <input name="TenMon" required><br>
-    <label>Loại:</label><br>
-    <select name="MaLoai">
-      <option value="">-- Chọn loại --</option>
-      <% loai.forEach(l => { %>
-        <option value="<%= l.MaLoai %>"><%= l.TenLoai %></option>
-      <% }) %>
-    </select><br>
-    <label>Giá bán:</label><br>
-    <input type="number" step="0.01" name="GiaBan" required><br>
-    <label>Trạng thái:</label><br>
-    <select name="TrangThai">
-      <option value="Con">Còn</option>
-      <option value="Het">Hết</option>
-    </select><br><br>
-    <button type="submit">Lưu</button>
-    <a href="/menu">Hủy</a>
-  </form>
+  <div class="form-container">
+    <h2>Thêm món ăn</h2>
+    <form action="/menu/them" method="POST">
+      <div class="mb-3">
+        <label for="MaMon" class="form-label">Mã món:</label>
+        <input type="text" id="MaMon" name="MaMon" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="TenMon" class="form-label">Tên món:</label>
+        <input type="text" id="TenMon" name="TenMon" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="MaLoai" class="form-label">Loại:</label>
+        <select id="MaLoai" name="MaLoai" class="form-select" required>
+          <option value="">-- Chọn loại --</option>
+          <% loai.forEach(l => { %>
+            <option value="<%= l.MaLoai %>"><%= l.TenLoai %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="GiaBan" class="form-label">Giá bán (VNĐ):</label>
+        <input type="number" id="GiaBan" step="0.01" name="GiaBan" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="TrangThai" class="form-label">Trạng thái:</label>
+        <select id="TrangThai" name="TrangThai" class="form-select" required>
+          <option value="Con">Còn</option>
+          <option value="Het">Hết</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">➕ Lưu món ăn</button>
+      <a href="/menu/dsmonan" class="btn btn-secondary">↩ Hủy</a>
+    </form>
+  </div>
 </body>
 </html>

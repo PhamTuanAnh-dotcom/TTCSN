@@ -29,7 +29,7 @@ router.post("/them", (req, res) => {
   const sql = `INSERT INTO MonAn (MaMon, TenMon, MaLoai, GiaBan, TrangThai) VALUES (?, ?, ?, ?, ?)`;
   db.query(sql, [MaMon, TenMon, MaLoai || null, GiaBan, TrangThai], err => {
     if (err) throw err;
-    res.redirect("/dsmonan"); // ✅ sửa ở đây
+    res.redirect("/menu/dsmonan");  // <- đúng
   });
 });
 
@@ -55,7 +55,7 @@ router.post("/sua/:MaMon", (req, res) => {
   const sql = `UPDATE MonAn SET TenMon=?, MaLoai=?, GiaBan=?, TrangThai=? WHERE MaMon=?`;
   db.query(sql, [TenMon, MaLoai || null, GiaBan, TrangThai, MaMon], err => {
     if (err) throw err;
-    res.redirect("/dsmonan"); // ✅ sửa ở đây
+    res.redirect("/menu/dsmonan");
   });
 });
 
@@ -64,7 +64,7 @@ router.get("/xoa/:MaMon", (req, res) => {
   const { MaMon } = req.params;
   db.query("DELETE FROM MonAn WHERE MaMon = ?", [MaMon], err => {
     if (err) throw err;
-    res.redirect("/dsmonan"); // ✅ sửa ở đây
+    res.redirect("/menu/dsmonan");
   });
 });
 

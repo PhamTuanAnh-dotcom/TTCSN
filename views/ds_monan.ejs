@@ -40,10 +40,18 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .actions a.add-btn {
-      background: #4CAF50;
+    .left-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .actions a.btn-link {
+      display: inline-block;
       color: white;
       padding: 10px 15px;
       border-radius: 6px;
@@ -52,9 +60,11 @@
       transition: 0.2s;
     }
 
-    .actions a.add-btn:hover {
-      background: #45a049;
-    }
+    .add-btn { background: #4CAF50; }
+    .add-btn:hover { background: #45a049; }
+
+    .home-btn { background: #007bff; }
+    .home-btn:hover { background: #0056b3; }
 
     .search-box input {
       padding: 8px 10px;
@@ -137,7 +147,10 @@
 
   <div class="container">
     <div class="actions">
-      <a href="/menu/them" class="add-btn"><i class="fa-solid fa-plus"></i> Thêm món mới</a>
+      <div class="left-actions">
+        <a href="/home_ql" class="btn-link home-btn"><i class="fa-solid fa-house"></i> Về trang chủ</a>
+        <a href="/menu/them" class="btn-link add-btn"><i class="fa-solid fa-plus"></i> Thêm món mới</a>
+      </div>
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="🔍 Tìm món ăn...">
       </div>

@@ -34,12 +34,14 @@ const staffRoutes = require("./routes/staff");
 const orderRoutes = require("./routes/order");
 const homeQLRoutes = require("./routes/home_ql"); 
 const menuRoutes = require("./routes/menu"); 
+const homeNVRoutes = require("./routes/home_nv");
 
-app.use("/", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/order", orderRoutes);
-app.use("/", staffRoutes);
+app.use("/staff", staffRoutes);
 app.use("/home_ql", homeQLRoutes);
 app.use("/menu", menuRoutes);
+app.use("/home_nv", homeNVRoutes);
 
 // Trang mặc định
 app.get("/", (req, res) => {
