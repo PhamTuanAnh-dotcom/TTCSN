@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Xác nhận Order - Bàn <%= MaBan %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+      padding: 30px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+    table {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .btn-confirm {
+      display: block;
+      margin: 30px auto;
+      padding: 12px 40px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h2>XÁC NHẬN ORDER - BÀN <%= MaBan %></h2>
+
+  <form action="/order/save" method="POST">
+    <input type="hidden" name="MaBan" value="<%= MaBan %>">
+
+    <table class="table table-bordered table-hover">
+      <thead class="table-secondary">
+        <tr>
+          <th>Tên món</th>
+          <th>Giá (₫)</th>
+          <th>Số lượng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% try { %>
+          <% (Array.isArray(monChon) ? monChon : []).forEach((mon, i) => { %>
+            <tr>
+              <td><%= mon.TenMon %></td>
+              <td><%= Number(mon.GiaBan || 0).toLocaleString('vi-VN') %></td>
+              <td>
+                <input type="hidden" name="monAn[<%= i %>][MaMon]" value="<%= mon.MaMon %>">
+                <input type="number" name="monAn[<%= i %>][SoLuong]" value="1" min="1" class="form-control text-center" style="width:80px;margin:auto;">
+              </td>
+            </tr>
+          <% }) %>
+        <% } catch (err) { %>
+          <tr><td colspan="3" class="text-danger">Lỗi hiển thị món ăn!</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success btn-confirm">Xác nhận Order</button>
+  </form>
+</body>
+</html>

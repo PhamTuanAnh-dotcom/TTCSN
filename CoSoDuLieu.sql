@@ -104,14 +104,49 @@ INSERT INTO VaiTro (IDVaiTro, TenVaiTro) VALUES
 ('QL', 'Quản lý'),
 ('NV', 'Nhân viên phục vụ'),
 ('BEP', 'Nhân viên bếp');
-select * from VaiTro
-select * from LoaiMon
 INSERT INTO LoaiMon (MaLoai, TenLoai) VALUES
 ('M01', 'Nướng'),
 ('M02', 'Lẩu'),
 ('M03', 'Khai Vị'),
 ('M04','Tráng Miệng');
-drop table ThanhToan;
+select * from TaiKhoan;
+ALTER TABLE MonAn ADD COLUMN HinhAnh VARCHAR(255);
+INSERT INTO BanAn (MaBan, ViTri, TrangThai) VALUES
+('101', 'Bàn 101', 'Trong'),
+('102', 'Bàn 102', 'Trong'),
+('103', 'Bàn 103', 'Trong'),
+('104', 'Bàn 104', 'Trong'),
+('105', 'Bàn 105', 'Trong'),
+('106', 'Bàn 106', 'Trong'),
+('107', 'Bàn 107', 'Trong'),
+('108', 'Bàn 108', 'Trong'),
+('109', 'Bàn 109', 'Trong'),
+
+('201', 'Bàn 201', 'Trong'),
+('202', 'Bàn 202', 'Trong'),
+('203', 'Bàn 203', 'Trong'),
+('204', 'Bàn 204', 'Trong'),
+('205', 'Bàn 205', 'Trong'),
+('206', 'Bàn 206', 'Trong'),
+('207', 'Bàn 207', 'Trong'),
+('208', 'Bàn 208', 'Trong'),
+('209', 'Bàn 209', 'Trong'),
+
+('301', 'Bàn 301', 'Trong'),
+('302', 'Bàn 302', 'Trong'),
+('303', 'Bàn 303', 'Trong'),
+('304', 'Bàn 304', 'Trong'),
+('305', 'Bàn 305', 'Trong'),
+('306', 'Bàn 306', 'Trong'),
+('307', 'Bàn 307', 'Trong'),
+('308', 'Bàn 308', 'Trong'),
+('309', 'Bàn 309', 'Trong');
+ insert into Tang(IDTang, SoTang) values
+ ('1', ' 1'),
+ ('2', ' 2'),
+('3', ' 3');
+
+
 
 
 

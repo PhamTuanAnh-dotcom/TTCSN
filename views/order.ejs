@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đặt món cho bàn <%= MaBan %></title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background-color: #343a40;
+      color: #fff;
+      padding: 20px;
+      position: fixed;
+      height: 100vh;
+    }
+    .sidebar h4 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .sidebar a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+    /* Nội dung chính */
+    .main-content {
+      margin-left: 260px;
+      padding: 20px;
+      width: calc(100% - 260px);
+    }
+    .menu-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .menu-item {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 15px;
+      text-align: center;
+    }
+    .menu-item img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .menu-item h6 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .menu-item p {
+      color: #dc3545;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h4>🍽 Nhà hàng</h4>
+
+    <% if (VaiTro === "QL") { %>
+      <a href="/home_ql">🏠 Trang chủ</a>
+    <% } else if (VaiTro === "NV") { %>
+      <a href="/home_nv">🏠 Trang chủ</a>
+    <% } else { %>
+      <a href="/home_ql">🏠 Trang chủ</a>
+    <% } %>
+  <a href="/order/history">📜 Lịch sử orders</a>
+    <a href="/auth/logout">🚪 Đăng xuất</a>
+  </div>
+
+  <!-- Nội dung chính -->
+  <div class="main-content">
+    <h3>Đặt món cho bàn <%= MaBan %></h3>
+
+    <form action="/order/review" method="POST">
+      <input type="hidden" name="MaBan" value="<%= MaBan %>">
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+  <input type="text" id="search" class="form-control w-25" placeholder="🔍 Tìm món...">
+  <div>
+    <button type="submit" class="btn btn-success">🛒 Đặt món</button>
+    <button type="button" class="btn btn-primary" id="checkoutBtn">💳 Thanh toán</button>
+  </div>
+</div>
+
+      
+      <div class="menu-container" id="menuContainer">
+        <% dsMon.forEach(mon => { %>
+          <div class="menu-item">
+            <img src="<%= mon.HinhAnh || 'https://via.placeholder.com/150' %>" alt="<%= mon.TenMon %>">
+            <h6><%= mon.TenMon %></h6>
+            <p><%= mon.GiaBan ? mon.GiaBan.toLocaleString() : 0 %> ₫</p>
+            <div>
+              <input type="checkbox" name="monChon[]" 
+  value='<%- JSON.stringify(mon).replace(/'/g, "&apos;").replace(/"/g, "&quot;") %>'>
+              <label>Chọn</label>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </form>
+  </div>
+
+  <script>
+  // Tìm kiếm món ăn
+  const searchInput = document.getElementById("search");
+  const menuContainer = document.getElementById("menuContainer");
+
+  searchInput.addEventListener("input", () => {
+    const keyword = searchInput.value.toLowerCase();
+    const items = menuContainer.querySelectorAll(".menu-item");
+    items.forEach(item => {
+      const name = item.querySelector("h6").innerText.toLowerCase();
+      item.style.display = name.includes(keyword) ? "" : "none";
+    });
+  });
+
+  // Thanh toán chỉ khi đã chọn món
+  document.getElementById("checkoutBtn").addEventListener("click", () => {
+    const checkedItems = Array.from(document.querySelectorAll('input[name="monChon[]"]:checked'));
+    if (checkedItems.length === 0) {
+      alert("Vui lòng chọn món trước khi thanh toán!");
+      return;
+    }
+
+    const maBan = "<%= MaBan %>";
+    const params = new URLSearchParams();
+    checkedItems.forEach(item => params.append("monChon[]", item.value));
+
+    window.location.href = `/order/pay/${maBan}?${params.toString()}`;
+  });
+</script>
+
+</body>
+</html>
