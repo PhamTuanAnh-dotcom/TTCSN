@@ -135,21 +135,10 @@
     });
   });
 
-  // Thanh toán chỉ khi đã chọn món
+  // Chuyển đến trang thanh toán
   document.getElementById("checkoutBtn").addEventListener("click", () => {
-    const checkedItems = Array.from(document.querySelectorAll('input[name="monChon[]"]:checked'));
-    if (checkedItems.length === 0) {
-      alert("Vui lòng chọn món trước khi thanh toán!");
-      return;
-    }
-
-    const maBan = "<%= MaBan %>";
-    const params = new URLSearchParams();
-    checkedItems.forEach(item => params.append("monChon[]", item.value));
-
-    window.location.href = `/order/pay/${maBan}?${params.toString()}`;
+    window.location.href = `/order/bill/<%= MaBan %>`;
   });
 </script>
-
 </body>
 </html>
