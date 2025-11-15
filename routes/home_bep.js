@@ -2,40 +2,103 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// Trang nhân viên bếp
+//  Trang chính của nhân viên bếp
 router.get("/", (req, res) => {
-  // Nếu chưa đăng nhập thì quay về login
   if (!req.session.user) {
     return res.redirect("/auth/login");
   }
 
-  const userId = req.session.user.ID; // ✅ đảm bảo đúng key bạn lưu trong session
+  const userId = req.session.user.ID;
 
-  const sql = `
+  // Lấy thông tin nhân viên bếp
+  const sqlChef = `
     SELECT ID, HoTen, SDT, Gmail, CCCD, TaiKhoan
     FROM TaiKhoan
     WHERE ID = ? AND IDVaiTro = 'BEP'
   `;
 
-  db.query(sql, [userId], (err, results) => {
+  db.query(sqlChef, [userId], (err, chefResults) => {
     if (err) {
-      console.error("Lỗi truy vấn:", err);
+      console.error("Lỗi truy vấn nhân viên:", err);
       return res.status(500).send("Lỗi máy chủ!");
     }
 
-    // Nếu không tìm thấy quản lý → trả về trang login
-    if (results.length === 0) {
+    if (chefResults.length === 0) {
       return res.redirect("/auth/login");
     }
 
-    const chef = results[0];
-    console.log("Dữ liệu nhân viên:", chef); // ✅ debug kiểm tra
+    const chef = chefResults[0];
 
-    // Render sang home_bep.ejs và truyền biến chef
-    res.render("home_bep", { chef });
+    //  Lấy danh sách order + món ăn
+    const sqlOrders = `
+      SELECT 
+        o.MaOder, 
+        o.ThoiGian, 
+        o.MaBan, 
+        b.ViTri AS TenBan,
+        om.MaMon,
+        m.TenMon,
+        om.SoLuong
+        om.GhiChu
+      FROM Oder o
+      JOIN Oder_Monan om ON o.MaOder = om.MaOder
+      JOIN MonAn m ON om.MaMon = m.MaMon
+      JOIN BanAn b ON o.MaBan = b.MaBan
+      WHERE o.TrangThai = 'Chua hoan thanh'
+      ORDER BY o.ThoiGian DESC
+    `;
+
+    db.query(sqlOrders, (err, orderResults) => {
+      if (err) {
+        console.error("Lỗi truy vấn đơn hàng:", err);
+        return res.status(500).send("Lỗi máy chủ!");
+      }
+
+      //  Gom các món lại theo mã Order
+      const groupedOrders = {};
+      orderResults.forEach(row => {
+        if (!groupedOrders[row.MaOder]) {
+          groupedOrders[row.MaOder] = {
+            MaOder: row.MaOder,
+            ThoiGian: row.ThoiGian,
+            MaBan: row.MaBan,
+            TenBan: row.TenBan,
+            monAnList: []
+          };
+        }
+        groupedOrders[row.MaOder].monAnList.push({
+          MaMon: row.MaMon,
+          TenMon: row.TenMon,
+          SoLuong: row.SoLuong
+        });
+      });
+
+      const orders = Object.values(groupedOrders);
+
+      // Render ra trang EJS
+      res.render("home_bep", { chef, orders });
+    });
   });
 });
-// ✅ Cập nhật thông tin nhân viên
+
+// Hoàn thành order
+router.post("/hoan-thanh/:maOder", (req, res) => {
+    const maOder = req.params.maOder;
+
+    const sql = `UPDATE Oder SET TrangThai = 'Da hoan thanh' WHERE MaOder = ?`;
+
+    db.query(sql, [maOder], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Lỗi server");
+        }
+
+        return res.send(`Đã hoàn thành order ${maOder}`);
+    });
+});
+
+
+// Cập nhật thông tin nhân viên bếp
 router.post("/update", (req, res) => {
   if (!req.session.user) return res.redirect("/");
 
@@ -49,7 +112,10 @@ router.post("/update", (req, res) => {
   `;
 
   db.query(sql, [HoTen, SDT, Gmail, CCCD, userId], (err) => {
-    if (err) throw err;
+    if (err) {
+      console.error("Lỗi cập nhật thông tin:", err);
+      return res.status(500).send("Lỗi máy chủ!");
+    }
     res.redirect("/home_bep");
   });
 });

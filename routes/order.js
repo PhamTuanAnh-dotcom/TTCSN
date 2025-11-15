@@ -38,9 +38,9 @@ router.get("/:MaBan", (req, res) => {
     if (err) throw err;
 
     // Lấy vai trò từ session đăng nhập
-    const VaiTro = req.session.user ? req.session.user.VaiTro : "NV";
+    const IDVaiTro = req.session.user ? req.session.user.IDVaiTro : "NV";
 
-    res.render("order", { MaBan, dsMon, VaiTro });
+    res.render("order", { MaBan, dsMon, IDVaiTro });
   });
 });
 
@@ -74,7 +74,7 @@ router.post("/save", (req, res) => {
     return res.status(401).send("Bạn cần đăng nhập để order món!");
   }
 
-  // 1️⃣ Chèn vào bảng Oder (KHÔNG có MaHD vì chưa thanh toán)
+  // Chèn vào bảng Oder (KHÔNG có MaHD vì chưa thanh toán)
   const sqlOder = `
     INSERT INTO Oder (MaOder, ThoiGian, MaBan, TaiKhoanID)
     VALUES (?, NOW(), ?, ?)
@@ -83,7 +83,7 @@ router.post("/save", (req, res) => {
   db.query(sqlOder, [MaOder, MaBan, TaiKhoanID], err => {
     if (err) throw err;
 
-    // 2️⃣ Thêm chi tiết món ăn
+    // Thêm chi tiết món ăn
     const sqlChiTiet = `
       INSERT INTO Oder_Monan (MaOder, MaMon, SoLuong)
       VALUES ?
@@ -93,7 +93,7 @@ router.post("/save", (req, res) => {
     db.query(sqlChiTiet, [values], err2 => {
       if (err2) throw err2;
 
-      // ✅ Sau khi lưu order xong → quay lại trang order của bàn
+      // Sau khi lưu order xong → quay lại trang order của bàn
       res.redirect(`/order/${MaBan}`);
     });
   });

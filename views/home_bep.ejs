@@ -6,6 +6,144 @@
   <link rel="stylesheet" href="/css/home_bep.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+<style>
+  body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #e0e0e0; /* nền tổng thể sáng xám */
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 200px;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.logo h3 {
+  text-align: center;
+  margin: 0 0 30px 0;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.menu li.active {
+  background: #d0d0d0;
+}
+
+.menu li i {
+  margin-right: 8px;
+}
+
+.menu li a {
+  text-decoration: none;
+  color: black;
+  flex: 1;
+}
+
+.logout {
+  text-align: center;
+  padding: 10px;
+}
+
+.logout a {
+  color: #e74c3c;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.main h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+  color: #333;
+}
+
+/* Danh sách bàn */
+.ban-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.ban-item {
+  background: #fff;
+  border-radius: 8px;
+  width: 80%;
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.ban-item h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.ban-item p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.ban-item ul {
+  list-style: none;
+  padding-left: 15px;
+  margin: 0;
+}
+
+.ban-item ul li {
+  padding: 3px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Nút hoàn thành */
+.done-btn {
+  align-self: flex-end;
+  background: #27ae60;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.done-btn:hover {
+  background: #2ecc71;
+}
+
+</style>
 <body>
   <div class="container">
     <!-- Sidebar -->
@@ -13,14 +151,12 @@
       <div class="logo">
         <h3>🍳 BẾP</h3>
       </div>
-
       <ul class="menu">
         <li class="active"><i class="fa-solid fa-house"></i> <a href="#">Trang chủ</a></li>
         <li><i class="fa-solid fa-user"></i> <a href="#">Thông tin cá nhân</a></li>
       </ul>
-
       <div class="logout">
-        <a href="/logout">Đăng xuất</a>
+        <a href="/auth/logout">Đăng xuất</a>
       </div>
     </aside>
 
@@ -53,13 +189,17 @@
 
   <script>
     function hoanThanh(maOder) {
-      if (confirm(`Xác nhận hoàn thành order ${maOder}?`)) {
-        fetch(`/bep/hoan-thanh/${maOder}`, { method: "POST" })
-          .then(res => res.text())
-          .then(msg => alert(msg))
-          .catch(err => console.error(err));
-      }
-    }
+  if (confirm(`Xác nhận hoàn thành order ${maOder}?`)) {
+    fetch(`/home_bep/hoan-thanh/${maOder}`, { method: "POST" })
+      .then(res => res.text())
+      .then(msg => {
+        alert(msg);        
+        location.reload(); 
+      })
+      .catch(err => console.error(err));
+  }
+}
+
   </script>
 </body>
 </html>
