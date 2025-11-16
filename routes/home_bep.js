@@ -38,8 +38,8 @@ router.get("/", (req, res) => {
         b.ViTri AS TenBan,
         om.MaMon,
         m.TenMon,
-        om.SoLuong
-        om.GhiChu
+        om.SoLuong,
+        om.GiChu
       FROM Oder o
       JOIN Oder_Monan om ON o.MaOder = om.MaOder
       JOIN MonAn m ON om.MaMon = m.MaMon

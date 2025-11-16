@@ -26,12 +26,50 @@ router.get("/them", (req, res) => {
 // Xử lý thêm món ăn
 router.post("/them", (req, res) => {
   const { MaMon, TenMon, MaLoai, GiaBan, TrangThai } = req.body;
-  const sql = `INSERT INTO MonAn (MaMon, TenMon, MaLoai, GiaBan, TrangThai) VALUES (?, ?, ?, ?, ?)`;
-  db.query(sql, [MaMon, TenMon, MaLoai || null, GiaBan, TrangThai], err => {
+
+  // MẢNG nguyên liệu – định lượng
+  const NguyenLieu = req.body.NguyenLieu;      // array
+  const DinhLuong = req.body.DinhLuong;        // array
+  const GhiChu = req.body.GhiChu || [];        // optional
+
+  // 1) Thêm Món Ăn
+  const sqlMon =
+    `INSERT INTO MonAn (MaMon, TenMon, MaLoai, GiaBan, TrangThai) VALUES (?, ?, ?, ?, ?)`;
+
+  db.query(sqlMon, [MaMon, TenMon, MaLoai || null, GiaBan, TrangThai], err => {
     if (err) throw err;
-    res.redirect("/menu/dsmonan");  // <- đúng
+    // 2) Kiểm tra nguyên liệu
+    if (!NguyenLieu || NguyenLieu.length === 0) {
+      return res.redirect("/menu/dsmonan");
+    }
+
+    // 3) Thêm nguyên liệu vào ChiTietMonAn
+    const sqlCT =
+      "INSERT INTO ChiTietMonAn (MaMon, NguyenLieu, DinhLuong, GhiChu) VALUES ?";
+
+    let data = [];
+
+    for (let i = 0; i < NguyenLieu.length; i++) {
+      if (!NguyenLieu[i]) continue;
+
+      data.push([
+        MaMon,
+        NguyenLieu[i],
+        DinhLuong[i] || "",
+        GhiChu[i] || ""
+      ]);
+    }
+
+    if (data.length === 0) return res.redirect("/menu/dsmonan");
+
+    db.query(sqlCT, [data], err2 => {
+      if (err2) throw err2;
+
+      res.redirect("/menu/dsmonan");
+    });
   });
 });
+
 
 // Form sửa món ăn
 router.get("/sua/:MaMon", (req, res) => {
