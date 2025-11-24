@@ -45,7 +45,7 @@ router.post("/them", (req, res) => {
 
     // 3) Thêm nguyên liệu vào ChiTietMonAn
     const sqlCT =
-      "INSERT INTO ChiTietMonAn (MaMon, NguyenLieu, DinhLuong, GhiChu) VALUES ?";
+      "INSERT INTO ChiTietMonAn (MaMon, NguyenLieu, DinhLuong) VALUES ?";
 
     let data = [];
 
@@ -55,8 +55,7 @@ router.post("/them", (req, res) => {
       data.push([
         MaMon,
         NguyenLieu[i],
-        DinhLuong[i] || "",
-        GhiChu[i] || ""
+        DinhLuong[i] || ""
       ]);
     }
 

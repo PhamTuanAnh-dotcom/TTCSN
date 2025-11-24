@@ -152,7 +152,7 @@
         <h3>🍳 BẾP</h3>
       </div>
       <ul class="menu">
-        <li class="active"><i class="fa-solid fa-house"></i> <a href="#">Trang chủ</a></li>
+        <li class="active"><i class="fa-solid fa-house"></i> <a href="home_bep.ejs">Trang chủ</a></li>
         <li><i class="fa-solid fa-user"></i> <a href="#">Thông tin cá nhân</a></li>
       </ul>
       <div class="logout">
@@ -199,7 +199,68 @@
       .catch(err => console.error(err));
   }
 }
+// ✅ Dữ liệu quản lý từ server (Node truyền vào)
+   const chef = {
+  hoten: "<%= chef?.HoTen || '' %>",
+  sdt: "<%= chef?.SDT || '' %>",
+  gmail: "<%= chef?.Gmail || '' %>",
+  cccd: "<%= chef?.CCCD || '' %>",
+};
+  const contentArea = document.querySelector('.main');
+  const sidebarLinks = document.querySelectorAll('.sidebar a');
 
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      const text = link.textContent.trim();
+       if ( text.includes('Đăng xuất')) return;
+    e.preventDefault();
+
+      // Bỏ active cũ và set active mới
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      
+      if (text.includes('Trang chủ')) {
+    location.reload();  // tải lại trang gốc
+}
+       if (text.includes('Thông tin cá nhân')) {
+        // ✅ Hiển thị thông tin từ DB
+        contentArea.innerHTML = `
+          <header>THÔNG TIN CÁ NHÂN</header>
+          <div class="p-4">
+            <h5>👤 Thông tin nhân viên</h5>
+            <hr>
+            <p><strong>Họ tên:</strong> ${chef.hoten}</p>
+            <p><strong>Số điện thoại:</strong> ${chef.sdt}</p>
+            <p><strong>Email:</strong> ${chef.gmail}</p>
+            <p><strong>CCCD:</strong> ${chef.cccd}</p>
+            <button class="btn btn-primary edit-info">Chỉnh sửa</button>
+          </div>
+        `;
+      }
+    });
+  });
+  const profilePanel = document.getElementById("profilePanel");
+const closePanel = document.getElementById("closePanel");
+
+// Khi bấm vào “Thông tin cá nhân”
+document.querySelector('.sidebar a:nth-child(2)').addEventListener('click', e => {
+  e.preventDefault();
+
+  // Đợi một chút để DOM cập nhật xong
+  setTimeout(() => {
+    const editBtn = document.querySelector('.edit-info');
+    if (editBtn) {
+      editBtn.addEventListener('click', e2 => {
+        e2.preventDefault();
+        profilePanel.classList.add("active");
+      });
+    }
+  }, 100);
+});
+// Khi bấm nút X
+closePanel.addEventListener('click', () => {
+  profilePanel.classList.remove("active");
+});
   </script>
 </body>
 </html>

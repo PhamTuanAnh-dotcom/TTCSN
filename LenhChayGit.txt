@@ -1,6 +1,6 @@
 // lay code
 git pull origin main
-//day copde len git
+//day code len git
 git add .
 git commit -m "..."
 git push origin main

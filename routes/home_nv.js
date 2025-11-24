@@ -31,11 +31,11 @@ router.get("/", (req, res) => {
     const staff = results[0];
     console.log("Dữ liệu nhân viên:", staff); // ✅ debug kiểm tra
 
-    // Render sang home_nv.ejs và truyền biến manager
+    // Render sang home_nv.ejs và truyền biến staff
     res.render("home_nv", { staff });
   });
 });
-// ✅ Cập nhật thông tin quản lý
+// Cập nhật thông tin nhân viên
 router.post("/update", (req, res) => {
   if (!req.session.user) return res.redirect("/");
 

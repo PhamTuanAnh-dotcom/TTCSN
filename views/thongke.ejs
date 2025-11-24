@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thống kê doanh thu</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    .filter { margin-bottom: 20px; }
+    .card { padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>📊 Thống kê doanh thu</h1>
+
+  <div class="filter">
+    <label>Chọn tháng: </label>
+    <input type="month" id="monthPicker" />
+    <button onclick="loadStats()">Xem</button>
+  </div>
+
+  <div class="card">
+    <h3>Doanh thu tháng</h3>
+    <p id="tongDoanhThu">0 VND</p>
+  </div>
+
+  <div class="card">
+    <h3>Biểu đồ doanh thu theo ngày</h3>
+    <canvas id="revenueChart"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>Món được order nhiều nhất</h3>
+    <p id="monNhieuNhat">Đang tải...</p>
+
+    <h3>Món được order ít nhất</h3>
+    <p id="monItNhat">Đang tải...</p>
+  </div>
+
+  <div class="card">
+    <h3>Nhân viên order nhiều nhất</h3>
+    <p id="nvNhieuNhat">Đang tải...</p>
+  </div>
+
+  <script>
+    let chart;
+
+    function formatVND(amount) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    }
+
+    function loadStats() {
+      const month = document.getElementById("monthPicker").value;
+      if (!month) return alert("Vui lòng chọn tháng!");
+
+      fetch(`/api/thongke?month=${month}`)
+        .then(res => res.json())
+        .then(data => {
+          // Doanh thu tổng
+          document.getElementById("tongDoanhThu").innerText = formatVND(data.tongDoanhThu);
+
+          // Món nhiều nhất / ít nhất
+          document.getElementById("monNhieuNhat").innerText = data.monNhieuNhat.TenMon 
+            ? `${data.monNhieuNhat.TenMon} - ${data.monNhieuNhat.SoLuong} món`
+            : "Chưa có dữ liệu";
+          document.getElementById("monItNhat").innerText = data.monItNhat.TenMon 
+            ? `${data.monItNhat.TenMon} - ${data.monItNhat.SoLuong} món`
+            : "Chưa có dữ liệu";
+
+          // Nhân viên nhiều nhất
+          document.getElementById("nvNhieuNhat").innerText = data.nvNhieuNhat.staffName 
+            ? `${data.nvNhieuNhat.staffName} - ${data.nvNhieuNhat.numOrders} order`
+            : "Chưa có dữ liệu";
+
+          // Biểu đồ doanh thu theo ngày
+          if (chart) chart.destroy();
+          chart = new Chart(document.getElementById("revenueChart"), {
+            type: "bar",
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: "Doanh thu (VND)",
+                data: data.values,
+                backgroundColor: "#0d6efd"
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: { 
+                  ticks: { callback: function(value) { return value.toLocaleString('vi-VN') + '₫'; } }
+                }
+              }
+            }
+          });
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Lỗi khi tải dữ liệu thống kê");
+        });
+    }
+  </script>
+</body>
+</html>

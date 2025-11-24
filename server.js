@@ -15,7 +15,7 @@ const db = mysql.createConnection({
 });
 db.connect(err => {
   if (err) throw err;
-  console.log("✅ Kết nối MySQL thành công!");
+  console.log("Kết nối MySQL thành công!");
 });
 
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +36,7 @@ const homeQLRoutes = require("./routes/home_ql");
 const menuRoutes = require("./routes/menu"); 
 const homeNVRoutes = require("./routes/home_nv");
 const homeBEPRoutes = require("./routes/home_bep");
+const thongkeRoutes = require("./routes/thongke");
 
 app.use("/auth", authRoutes);
 app.use("/order", orderRoutes);
@@ -43,7 +44,8 @@ app.use("/staff", staffRoutes);
 app.use("/home_ql", homeQLRoutes);
 app.use("/menu", menuRoutes);
 app.use("/home_nv", homeNVRoutes);
-app.use("/home_bep", homeBEPRoutes);
+app.use("/home_bep", homeBEPRoutes); 
+app.use("/thongke", thongkeRoutes);
 
 // Trang mặc định
 app.get("/", (req, res) => {
@@ -51,5 +53,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log("🚀 Server chạy tại http://localhost:3000");
+  console.log(" Server chạy tại http://localhost:3000");
 });

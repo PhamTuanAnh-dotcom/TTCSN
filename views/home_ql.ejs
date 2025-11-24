@@ -175,6 +175,8 @@
       <a href="#">👤 Thông tin cá nhân</a>
       <a href="/staff/dsnhanvien">⚙️ Quản lí nhân viên</a>
       <a href="/menu/dsmonan">🍽️ Quản lí menu</a>
+      <a href="/thongke/thongke">📊 Thống kê doanh thu</a>
+      <a href="#">🧾 Quản lí định lượng</a>
     </div>
     <div class="logout">
       <a href="/auth/logout" class="logout-btn" style="color:#f39c12; text-decoration:none;">🚪 Đăng xuất</a>
@@ -273,7 +275,7 @@
     link.addEventListener('click', e => {
       const text = link.textContent.trim();
     // Nếu là "Quản lí nhân viên" thì để href hoạt động bình thường
-    if (text.includes('Quản lí nhân viên') || text.includes('Quản lí menu') || text.includes('Đăng xuất')) return;
+    if (text.includes('Quản lí nhân viên') || text.includes('Quản lí menu') || text.includes('Đăng xuất') || text.includes('Thống kê doanh thu')|| text.includes('Quản lí định lượng')) return;
     // Còn các mục khác thì chặn
     e.preventDefault();
 

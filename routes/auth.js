@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const db = require("../db"); // ✅ import pool
+const db = require("../db");
 
 // ------------------- TRANG ĐĂNG NHẬP -------------------
 router.get("/login", (req, res) => {
@@ -25,21 +25,19 @@ router.post("/login", (req, res) => {
 
   db.query("SELECT * FROM TaiKhoan WHERE TaiKhoan = ?", [TaiKhoan], (err, results) => {
     if (err) {
-      console.error("❌ Lỗi MySQL:", err);
-      return res.send("❌ Lỗi khi đăng nhập!");
+      console.error(" Lỗi MySQL:", err);
+      return res.send(" Lỗi khi đăng nhập!");
     }
 
     if (results.length === 0) {
-  return res.render("home", { error: "❌ Tài khoản không tồn tại!" });
-}
-
-
+      return res.render("home", { error: " Tài khoản không tồn tại!" });
+    }
     const user = results[0];
 
     bcrypt.compare(MatKhau, user.MatKhau, (err, isMatch) => {
       if (err) {
-        console.error("❌ Lỗi bcrypt:", err);
-        return res.send("❌ Lỗi khi đăng nhập!");
+        console.error(" Lỗi bcrypt:", err);
+        return res.send(" Lỗi khi đăng nhập!");
       }
 
       if (isMatch) {
@@ -47,15 +45,15 @@ router.post("/login", (req, res) => {
           ID: user.ID,
           HoTen: user.HoTen,
           IDVaiTro: user.IDVaiTro
-          };
+        };
         switch (user.IDVaiTro) {
           case "QL": return res.redirect("/home_ql");
           case "NV": return res.redirect("/home_nv");
           case "BEP": return res.redirect("/home_bep");
-          default: return res.send("❌ Vai trò không hợp lệ!");
+          default: return res.send(" Vai trò không hợp lệ!");
         }
       } else {
-        return res.render("home", { error: "❌ Sai mật khẩu!" });
+        return res.render("home", { error: " Sai mật khẩu!" });
       }
     });
   });
@@ -74,14 +72,14 @@ router.post("/register", async (req, res) => {
 
     db.query(sql, [ID, HoTen, SDT, Gmail, CCCD, TaiKhoan, hashedPassword, IDVaiTro], (err) => {
       if (err) {
-        console.error("❌ Lỗi MySQL:", err);
-        return res.send("❌ Lỗi khi đăng ký!");
+        console.error(" Lỗi MySQL:", err);
+        return res.send(" Lỗi khi đăng ký!");
       }
       return res.render("home", { error: "đăng kí thành công" });
     });
   } catch (error) {
-    console.error("❌ Lỗi hệ thống:", error);
-    res.send("❌ Có lỗi xảy ra khi đăng ký!");
+    console.error("Lỗi hệ thống:", error);
+    res.send(" Có lỗi xảy ra khi đăng ký!");
   }
 });
 
@@ -89,8 +87,8 @@ router.post("/register", async (req, res) => {
 router.get("/logout", (req, res) => {
   req.session.destroy(err => {
     if (err) {
-      console.error("❌ Lỗi khi đăng xuất:", err);
-      return res.send("❌ Lỗi khi đăng xuất!");
+      console.error(" Lỗi khi đăng xuất:", err);
+      return res.send(" Lỗi khi đăng xuất!");
     }
     req.session = null;
     res.redirect("/");

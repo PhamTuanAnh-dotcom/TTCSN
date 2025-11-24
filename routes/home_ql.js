@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
     return res.redirect("/login");
   }
 
-  const userId = req.session.user.ID; // ✅ đảm bảo đúng key bạn lưu trong session
+  const userId = req.session.user.ID; // đảm bảo đúng key bạn lưu trong session
 
   const sql = `
     SELECT ID, HoTen, SDT, Gmail, CCCD, TaiKhoan
@@ -29,13 +29,13 @@ router.get("/", (req, res) => {
     }
 
     const manager = results[0];
-    console.log("Dữ liệu quản lý:", manager); // ✅ debug kiểm tra
+    console.log("Dữ liệu quản lý:", manager); // debug kiểm tra
 
     // Render sang home_ql.ejs và truyền biến manager
     res.render("home_ql", { manager });
   });
 });
-// ✅ Cập nhật thông tin quản lý
+//  Cập nhật thông tin quản lý
 router.post("/update", (req, res) => {
   if (!req.session.user) return res.redirect("/");
 
