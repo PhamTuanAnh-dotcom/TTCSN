@@ -1,11 +1,12 @@
 CREATE DATABASE TTCSN CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE TTCSN;
 
+-- BẢNG VAI TRÒ
 CREATE TABLE VaiTro (
     IDVaiTro VARCHAR(50) PRIMARY KEY,
     TenVaiTro VARCHAR(50) NOT NULL
 );
-
+-- BẢNG TÀI KHOẢN
 CREATE TABLE TaiKhoan (
     ID VARCHAR(50) PRIMARY KEY,
     HoTen VARCHAR(100) NOT NULL,
@@ -19,11 +20,12 @@ CREATE TABLE TaiKhoan (
         ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+-- BẢNG TẦNG
 CREATE TABLE Tang (
     IDTang VARCHAR(50) PRIMARY KEY,
     SoTang INT NOT NULL
 );
-
+-- PHÂN CÔNG NHÂN VIÊN
 CREATE TABLE PhanCong (
     IDPhanCong INT AUTO_INCREMENT PRIMARY KEY,
     TaiKhoanID VARCHAR(50),
@@ -35,7 +37,7 @@ CREATE TABLE PhanCong (
     FOREIGN KEY (TangID) REFERENCES Tang(IDTang)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
-
+-- BÀN ĂN
 CREATE TABLE BanAn (
     MaBan VARCHAR(50) PRIMARY KEY,
     ViTri VARCHAR(100),
@@ -45,21 +47,34 @@ CREATE TABLE BanAn (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- LOẠI MÓN
 CREATE TABLE LoaiMon (
     MaLoai VARCHAR(50) PRIMARY KEY,
     TenLoai VARCHAR(50) NOT NULL
 );
 
+-- MÓN ĂN
 CREATE TABLE MonAn (
     MaMon VARCHAR(50) PRIMARY KEY,
     TenMon VARCHAR(100) NOT NULL,
     MaLoai VARCHAR(50),
     GiaBan DECIMAL(12,2) NOT NULL,
+    HinhAnh VARCHAR(255),
     TrangThai ENUM('Con','Het') DEFAULT 'Con',
     FOREIGN KEY (MaLoai) REFERENCES LoaiMon(MaLoai)
         ON DELETE SET NULL ON UPDATE CASCADE
 );
-
+-- CHI TIẾT MÓN ĂN
+CREATE TABLE ChiTietMonAn (
+    MaCT INT AUTO_INCREMENT PRIMARY KEY,
+    MaMon VARCHAR(50) NOT NULL,
+    NguyenLieu VARCHAR(255) NOT NULL,
+    DinhLuong VARCHAR(100) NOT NULL,
+    FOREIGN KEY (MaMon) REFERENCES MonAn(MaMon)
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE
+);
+-- HÓA ĐƠN THANH TOÁN
 CREATE TABLE ThanhToan (
     MaHD VARCHAR(50) PRIMARY KEY,
     NgayGio DATETIME NOT NULL,
@@ -73,14 +88,14 @@ CREATE TABLE ThanhToan (
     FOREIGN KEY (BanAnID) REFERENCES BanAn(MaBan)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
-
--- Bảng Order (đặt món)
+-- ORDER (ĐẶT MÓN)
 CREATE TABLE Oder (
     MaOder VARCHAR(50) PRIMARY KEY,
     ThoiGian DATETIME NOT NULL,
-    TaiKhoanID VARCHAR(50),       -- Nhân viên phục vụ
-    MaHD VARCHAR(50),             -- Hóa đơn liên kết
-    MaBan VARCHAR(50),            -- Vị trí bàn đặt
+    TaiKhoanID VARCHAR(50),
+    MaHD VARCHAR(50),
+    MaBan VARCHAR(50),
+    TrangThai ENUM('Chua hoan thanh','Da hoan thanh') DEFAULT 'Chua hoan thanh',
     FOREIGN KEY (TaiKhoanID) REFERENCES TaiKhoan(ID)
         ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (MaHD) REFERENCES ThanhToan(MaHD)
@@ -88,29 +103,35 @@ CREATE TABLE Oder (
     FOREIGN KEY (MaBan) REFERENCES BanAn(MaBan)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
-
--- Bảng chi tiết Order - Món ăn
+-- CHI TIẾT ORDER - MÓN ĂN
 CREATE TABLE Oder_Monan (
     MaOder VARCHAR(50),
     MaMon VARCHAR(50),
     SoLuong INT NOT NULL,
     PRIMARY KEY (MaOder, MaMon),
+    GiChu VARCHAR(255),
     FOREIGN KEY (MaOder) REFERENCES Oder(MaOder)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (MaMon) REFERENCES MonAn(MaMon)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+-- DỮ LIỆU MẪU
 INSERT INTO VaiTro (IDVaiTro, TenVaiTro) VALUES
 ('QL', 'Quản lý'),
 ('NV', 'Nhân viên phục vụ'),
 ('BEP', 'Nhân viên bếp');
+
 INSERT INTO LoaiMon (MaLoai, TenLoai) VALUES
 ('M01', 'Nướng'),
 ('M02', 'Lẩu'),
 ('M03', 'Khai Vị'),
-('M04','Tráng Miệng');
-select * from TaiKhoan;
-ALTER TABLE MonAn ADD COLUMN HinhAnh VARCHAR(255);
+('M04', 'Tráng Miệng');
+
+INSERT INTO Tang(IDTang, SoTang) VALUES
+('1', 1),
+('2', 2),
+('3', 3);
+
 INSERT INTO BanAn (MaBan, ViTri, TrangThai) VALUES
 ('101', 'Bàn 101', 'Trong'),
 ('102', 'Bàn 102', 'Trong'),
@@ -141,14 +162,4 @@ INSERT INTO BanAn (MaBan, ViTri, TrangThai) VALUES
 ('307', 'Bàn 307', 'Trong'),
 ('308', 'Bàn 308', 'Trong'),
 ('309', 'Bàn 309', 'Trong');
- insert into Tang(IDTang, SoTang) values
- ('1', ' 1'),
- ('2', ' 2'),
-('3', ' 3');
-
-
-
-
-
-
 

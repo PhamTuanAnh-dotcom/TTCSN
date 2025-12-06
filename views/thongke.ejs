@@ -1,105 +1,208 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>Thống kê doanh thu</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: Arial; margin: 20px; }
-    .filter { margin-bottom: 20px; }
-    .card { padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Thống kê doanh thu</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100vh;
+            background: #2c3e50;
+            color: white;
+            border-right: 1px solid #ccc;
+            padding: 15px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            text-decoration: none;
+            color: white;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .sidebar a:hover, .sidebar .active {
+            background: #34495e;
+        }
+        .sidebar .logout {
+           text-align: center;
+           padding: 10px;
+           border-top: 1px solid #47525d;
+        }
+
+        /* Content */
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+
+        .stat-area {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .chart-box {
+            width: 58%;
+            height: 360px;
+            border: 1px solid #ccc;
+            padding: 15px;
+        }
+
+        .popular-box {
+            width: 38%;
+            height: 360px;
+            border: 1px solid #ccc;
+            padding: 15px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        table th, table td {
+            padding: 6px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .bottom-text {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+    </style>
 </head>
+
 <body>
-  <h1>📊 Thống kê doanh thu</h1>
 
-  <div class="filter">
-    <label>Chọn tháng: </label>
-    <input type="month" id="monthPicker" />
-    <button onclick="loadStats()">Xem</button>
-  </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="/home_ql">🏠 Trang chủ</a>
+        <a href="/staff/dsnhanvien">⚙️ Quản lí nhân viên</a>
+        <a href="/menu/dsmonan">🍽️ Quản lí thực đơn</a>
+        <a class="active" href="/thongke">📊 Thống kê</a>
+        <a href="/dinhluong">🧮 Quản lí định lượng</a>
+        <div class="logout">
+            <a href="/auth/logout" class="logout-btn" style="color:#f39c12; text-decoration:none;">🚪 Đăng xuất</a>
+        </div>
+    </div>
+    
+    <!-- Nội dung -->
+    <div class="content">
 
-  <div class="card">
-    <h3>Doanh thu tháng</h3>
-    <p id="tongDoanhThu">0 VND</p>
-  </div>
+        <div class="title">NHÀ HÀNG SIÊU CẤP VIP PRO</div>
 
-  <div class="card">
-    <h3>Biểu đồ doanh thu theo ngày</h3>
-    <canvas id="revenueChart"></canvas>
-  </div>
+        <!-- Dropdown chọn tháng -->
+        <div class="top-row">
+            <select id="monthSelect" onchange="onChangeMonth()">
+                <option disabled>Thời gian (Tháng)</option>
 
-  <div class="card">
-    <h3>Món được order nhiều nhất</h3>
-    <p id="monNhieuNhat">Đang tải...</p>
+                <% monthList.forEach(m => { %>
+                    <option value="<%= m.thang %>-<%= m.nam %>"
+                        <%= (m.thang == selectedMonth && m.nam == selectedYear) ? "selected" : "" %>>
+                        Tháng <%= m.thang %> - <%= m.nam %>
+                    </option>
+                <% }) %>
+            </select>
+        </div>
 
-    <h3>Món được order ít nhất</h3>
-    <p id="monItNhat">Đang tải...</p>
-  </div>
+        <!-- Khu vực biểu đồ + món thịnh hành -->
+        <div class="stat-area">
 
-  <div class="card">
-    <h3>Nhân viên order nhiều nhất</h3>
-    <p id="nvNhieuNhat">Đang tải...</p>
-  </div>
+            <div class="chart-box">
+                <canvas id="chartDoanhThu"></canvas>
+            </div>
 
-  <script>
-    let chart;
+            <div class="popular-box">
+                <h3>Những món thịnh hành</h3>
+                <table>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Số lần gọi</th>
+                    </tr>
+                    <% popularFoods.forEach(p => { %>
+                        <tr>
+                            <td><%= p.TenMon %></td>
+                            <td><%= p.SoLanGoi %></td>
+                        </tr>
+                    <% }) %>
+                </table>
+            </div>
 
-    function formatVND(amount) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-    }
+        </div>
 
-    function loadStats() {
-      const month = document.getElementById("monthPicker").value;
-      if (!month) return alert("Vui lòng chọn tháng!");
+        <div class="bottom-text">
+            Tổng doanh thu tháng: <%= tongDoanhThu %> triệu đồng
+        </div>
 
-      fetch(`/api/thongke?month=${month}`)
-        .then(res => res.json())
-        .then(data => {
-          // Doanh thu tổng
-          document.getElementById("tongDoanhThu").innerText = formatVND(data.tongDoanhThu);
+    </div>
 
-          // Món nhiều nhất / ít nhất
-          document.getElementById("monNhieuNhat").innerText = data.monNhieuNhat.TenMon 
-            ? `${data.monNhieuNhat.TenMon} - ${data.monNhieuNhat.SoLuong} món`
-            : "Chưa có dữ liệu";
-          document.getElementById("monItNhat").innerText = data.monItNhat.TenMon 
-            ? `${data.monItNhat.TenMon} - ${data.monItNhat.SoLuong} món`
-            : "Chưa có dữ liệu";
+    <!-- JS xử lý biểu đồ -->
+    <script>
+        const ctx = document.getElementById('chartDoanhThu');
 
-          // Nhân viên nhiều nhất
-          document.getElementById("nvNhieuNhat").innerText = data.nvNhieuNhat.staffName 
-            ? `${data.nvNhieuNhat.staffName} - ${data.nvNhieuNhat.numOrders} order`
-            : "Chưa có dữ liệu";
-
-          // Biểu đồ doanh thu theo ngày
-          if (chart) chart.destroy();
-          chart = new Chart(document.getElementById("revenueChart"), {
-            type: "bar",
+        new Chart(ctx, {
+            type: 'line',
             data: {
-              labels: data.labels,
-              datasets: [{
-                label: "Doanh thu (VND)",
-                data: data.values,
-                backgroundColor: "#0d6efd"
-              }]
+                labels: <%- JSON.stringify(labels) %>,
+                datasets: [{
+                    label: 'Doanh thu (triệu đồng)',
+                    data: <%- JSON.stringify(values) %>,
+                    borderWidth: 3,
+                    tension: 0.3
+                }]
             },
             options: {
-              responsive: true,
-              plugins: { legend: { display: false } },
-              scales: {
-                y: { 
-                  ticks: { callback: function(value) { return value.toLocaleString('vi-VN') + '₫'; } }
+                scales: {
+                    y: {
+                        title: { display: true, text: 'Doanh thu (triệu)' },
+                        beginAtZero: true
+                    },
+                    x: {
+                        title: { display: true, text: 'Các tuần trong tháng' }
+                    }
                 }
-              }
             }
-          });
-        })
-        .catch(err => {
-          console.error(err);
-          alert("Lỗi khi tải dữ liệu thống kê");
         });
-    }
-  </script>
+
+        function onChangeMonth() {
+            const v = document.getElementById("monthSelect").value;
+            window.location.href = "/thongke?month=" + v;
+        }
+    </script>
+
 </body>
 </html>
