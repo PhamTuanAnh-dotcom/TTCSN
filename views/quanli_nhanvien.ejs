@@ -62,24 +62,12 @@
           <label>Số điện thoại</label>
           <input type="text" class="form-control" value="<%= TaiKhoan.SDT %>" disabled>
         </div>
-        <div class="col">
-          <label>Số tầng</label>
-          <input type="text" name="SoTang" class="form-control" placeholder="Nhập số tầng..." required>
-        </div>
       </div>
-
       <div class="mb-3">
         <label>Số CCCD</label>
         <input type="text" class="form-control" value="<%= TaiKhoan.CCCD %>" disabled>
       </div>
-
-      <div class="mb-3">
-        <label>Lời nhắn</label>
-        <textarea class="form-control" rows="3" placeholder="Nhập lời nhắn..."></textarea>
-      </div>
-
       <div class="btn-area">
-        <button type="submit" class="btn btn-primary">Gửi</button>
         <a href="/staff/dsnhanvien" class="btn btn-secondary">Quay lại</a>
         <a href="/staff/xoanhanvien/<%= TaiKhoan.ID %>" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa tài khoản này không?')">Xóa tài khoản</a>
       </div>

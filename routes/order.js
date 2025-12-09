@@ -98,7 +98,32 @@ router.post("/save", (req, res) => {
     });
   });
 });
+router.get("/history", (req, res) => {
+    // Tính ngày hôm nay từ 00:00:00 -> 23:59:59
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
 
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const sql = `
+        SELECT o.MaOder, o.ThoiGian, o.MaBan, o.TaiKhoanID,
+               t.HoTen AS NhanVien
+        FROM Oder o
+        LEFT JOIN TaiKhoan t ON o.TaiKhoanID = t.ID
+        WHERE o.ThoiGian BETWEEN ? AND ?
+        ORDER BY o.ThoiGian DESC
+    `;
+
+    db.query(sql, [startOfDay, endOfDay], (err, results) => {
+        if (err) {
+            console.error("Lỗi truy vấn:", err);
+            return res.status(500).send("Lỗi server");
+        }
+
+        res.render("order_history", { orders: results });
+    });
+});
 // Xác nhận thanh toán
 router.post("/pay", (req, res) => {
   const { MaBan, PhuongThuc } = req.body;
@@ -133,7 +158,15 @@ router.post("/pay", (req, res) => {
 
         db.query("UPDATE BanAn SET TrangThai = 'Trong' WHERE MaBan = ?", [MaBan], err4 => {
           if (err4) throw err4;
-          res.redirect("/home_ql");
+           if (IDVaiTro === "QL") {
+            res.redirect("/home_ql");
+          } 
+          else if (IDVaiTro === "NV") {
+            res.redirect("/home_nv");
+          } 
+          else {
+            res.redirect("/");
+          }
         });
       });
     });

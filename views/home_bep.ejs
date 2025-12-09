@@ -175,6 +175,9 @@
                   <li>
                     <%= mon.TenMon %> - <%= mon.SoLuong %> phần
                   </li>
+                  <li>
+                    Ghi chú: <%= mon.GiChu || 'Không có' %>
+                  </li>
                 <% }) %>
               </ul>
               <button class="done-btn" onclick="hoanThanh('<%= order.MaOder %>')">Hoàn thành</button>

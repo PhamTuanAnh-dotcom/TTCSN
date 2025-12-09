@@ -1,0 +1,19 @@
+<h2>📜 Lịch sử Order hôm nay</h2>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Mã Order</th>
+        <th>Thời gian</th>
+        <th>Bàn</th>
+        <th>Nhân viên</th>
+    </tr>
+
+    <% orders.forEach(o => { %>
+        <tr>
+            <td><%= o.MaOder %></td>
+            <td><%= o.ThoiGian.toLocaleString() %></td>
+            <td><%= o.MaBan %></td>
+            <td><%= o.NhanVien %></td>
+        </tr>
+    <% }) %>
+</table>

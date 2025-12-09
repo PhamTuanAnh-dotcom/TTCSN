@@ -108,8 +108,8 @@ CREATE TABLE Oder_Monan (
     MaOder VARCHAR(50),
     MaMon VARCHAR(50),
     SoLuong INT NOT NULL,
-    PRIMARY KEY (MaOder, MaMon),
     GiChu VARCHAR(255),
+    PRIMARY KEY (MaOder, MaMon),
     FOREIGN KEY (MaOder) REFERENCES Oder(MaOder)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (MaMon) REFERENCES MonAn(MaMon)
@@ -162,4 +162,4 @@ INSERT INTO BanAn (MaBan, ViTri, TrangThai) VALUES
 ('307', 'Bàn 307', 'Trong'),
 ('308', 'Bàn 308', 'Trong'),
 ('309', 'Bàn 309', 'Trong');
-
+select * from Oder_Monan;

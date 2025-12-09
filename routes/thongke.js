@@ -49,8 +49,11 @@ router.get("/thongke", async (req, res) => {
     const labels = rows.map(r => `Tuần ${r.Tuan}`);
     const values = rows.map(r => r.DoanhThu);
 
-    const tongDoanhThu = values.reduce((a, b) => a + b, 0).toFixed(1);
-
+   const tongDoanhThu = values
+    .map(v => Number(v) || 0)   // đảm bảo mọi giá trị là số
+    .reduce((a, b) => a + b, 0)
+    .toFixed(1);
+    
     res.render("thongke", {
         monthList,
         selectedMonth,

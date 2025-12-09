@@ -114,7 +114,7 @@
         <a href="/staff/dsnhanvien">⚙️ Quản lí nhân viên</a>
         <a href="/menu/dsmonan">🍽️ Quản lí thực đơn</a>
         <a class="active" href="/thongke">📊 Thống kê</a>
-        <a href="/dinhluong">🧮 Quản lí định lượng</a>
+        <a href="/#">🧮 Quản lí định lượng</a>
         <div class="logout">
             <a href="/auth/logout" class="logout-btn" style="color:#f39c12; text-decoration:none;">🚪 Đăng xuất</a>
         </div>
@@ -172,37 +172,41 @@
 
     <!-- JS xử lý biểu đồ -->
     <script>
-        const ctx = document.getElementById('chartDoanhThu');
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: <%- JSON.stringify(labels) %>,
-                datasets: [{
-                    label: 'Doanh thu (triệu đồng)',
-                    data: <%- JSON.stringify(values) %>,
-                    borderWidth: 3,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        title: { display: true, text: 'Doanh thu (triệu)' },
-                        beginAtZero: true
-                    },
-                    x: {
-                        title: { display: true, text: 'Các tuần trong tháng' }
-                    }
+    const ctx = document.getElementById('chartDoanhThu');
+    const values = <%- JSON.stringify(values.map(Number)) %>;
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: <%- JSON.stringify(labels) %>,
+            datasets: [{
+                label: 'Doanh thu (triệu đồng)',
+                data: <%- JSON.stringify(values.map(v => Number(v))) %>,  
+                borderWidth: 3,
+                borderColor: "blue",
+                backgroundColor: "rgba(0,123,255,0.3)",
+                tension: 0.3
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: Math.max(...values.map(v => Number(v))) * 1.3,
+                    title: { display: true, text: 'Doanh thu (triệu)' }
+                },
+                x: {
+                    title: { display: true, text: 'Các tuần trong tháng' }
                 }
             }
-        });
-
+        }
+    });
+</script>
+    <script>
         function onChangeMonth() {
-            const v = document.getElementById("monthSelect").value;
-            window.location.href = "/thongke?month=" + v;
+            const select = document.getElementById('monthSelect');
+            const value = select.value;  // "thang-nam"
+            window.location.href = `/thongke?month=${value}`;
         }
     </script>
-
 </body>
 </html>

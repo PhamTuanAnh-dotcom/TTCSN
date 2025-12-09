@@ -56,6 +56,12 @@
                 <input type="number" name="monAn[<%= i %>][SoLuong]" value="1" min="1" class="form-control text-center" style="width:80px;margin:auto;">
               </td>
             </tr>
+            <tr>
+              <td colspan="3">
+                <label>Ghi chú:</label>
+                <input type="text" name="monAn[<%= i %>][GiChu]" class="form-control" placeholder="Nhập ghi chú cho món ăn (nếu có)">
+              </td>
+            </tr>
           <% }) %>
         <% } catch (err) { %>
           <tr><td colspan="3" class="text-danger">Lỗi hiển thị món ăn!</td></tr>
