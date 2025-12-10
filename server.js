@@ -37,6 +37,7 @@ const menuRoutes = require("./routes/menu");
 const homeNVRoutes = require("./routes/home_nv");
 const homeBEPRoutes = require("./routes/home_bep");
 const thongkeRoutes = require("./routes/thongke");
+const dinhluongRoutes = require("./routes/dinhluong");
 
 app.use("/auth", authRoutes);
 app.use("/order", orderRoutes);
@@ -46,6 +47,7 @@ app.use("/menu", menuRoutes);
 app.use("/home_nv", homeNVRoutes);
 app.use("/home_bep", homeBEPRoutes); 
 app.use("/thongke", thongkeRoutes);
+app.use("/dinhluong", dinhluongRoutes);
 
 // Trang mặc định
 app.get("/", (req, res) => {

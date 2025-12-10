@@ -69,7 +69,8 @@ router.get("/", (req, res) => {
         groupedOrders[row.MaOder].monAnList.push({
           MaMon: row.MaMon,
           TenMon: row.TenMon,
-          SoLuong: row.SoLuong
+          SoLuong: row.SoLuong,
+          GiChu: row.GiChu
         });
       });
 

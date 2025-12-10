@@ -4,38 +4,43 @@ const db = require("../db");
 
 // Trang quản lý chính
 router.get("/", (req, res) => {
-  // Nếu chưa đăng nhập thì quay về login
   if (!req.session.user) {
     return res.redirect("/login");
   }
 
-  const userId = req.session.user.ID; // đảm bảo đúng key bạn lưu trong session
+  const userId = req.session.user.ID;
 
-  const sql = `
+  // Query thông tin quản lý
+  const sqlManager = `
     SELECT ID, HoTen, SDT, Gmail, CCCD, TaiKhoan
     FROM TaiKhoan
     WHERE ID = ? AND IDVaiTro = 'QL'
   `;
 
-  db.query(sql, [userId], (err, results) => {
-    if (err) {
-      console.error("Lỗi truy vấn:", err);
-      return res.status(500).send("Lỗi máy chủ!");
-    }
+  // Query danh sách bàn cùng trạng thái
+  const sqlTables = `SELECT MaBan, TrangThai FROM BanAn`;
 
-    // Nếu không tìm thấy quản lý → trả về trang login
-    if (results.length === 0) {
+  db.query(sqlManager, [userId], (err, managerResult) => {
+    if (err) return res.status(500).send("Lỗi máy chủ!");
+
+    if (managerResult.length === 0) {
       return res.redirect("/login");
     }
 
-    const manager = results[0];
-    console.log("Dữ liệu quản lý:", manager); // debug kiểm tra
+    const manager = managerResult[0];
 
-    // Render sang home_ql.ejs và truyền biến manager
-    res.render("home_ql", { manager });
+    db.query(sqlTables, (err2, tableList) => {
+      if (err2) return res.status(500).send("Lỗi máy chủ!");
+
+      res.render("home_ql", {
+        manager: manager,
+        tables: tableList
+      });
+    });
   });
 });
-//  Cập nhật thông tin quản lý
+
+// Cập nhật thông tin quản lý
 router.post("/update", (req, res) => {
   if (!req.session.user) return res.redirect("/");
 

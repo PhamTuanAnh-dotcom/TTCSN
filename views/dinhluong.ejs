@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý định lượng nguyên liệu</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body class="p-4">
+
+  <h2 class="text-center mb-4">📦 THỐNG KÊ TIÊU THỤ NGUYÊN LIỆU (THEO TẠ)</h2>
+
+  <table class="table table-bordered text-center">
+    <thead class="table-dark">
+      <tr>
+        <th>Nguyên liệu</th>
+        <th>Tổng tiêu thụ (TẠ)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% dsNL.forEach(nl => { %>
+        <tr>
+          <td><%= nl.NguyenLieu %></td>
+          <td><%= nl.TongTieuThuTa %> tạ</td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <div class="text-center mt-4">
+    <a href="/home_ql" class="btn btn-secondary">⬅ Quay về trang chủ</a>
+  </div>
+
+</body>
+</html>

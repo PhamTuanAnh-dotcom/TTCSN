@@ -65,16 +65,28 @@ router.post("/review", (req, res) => {
 
 // Lưu order vào database
 router.post("/save", (req, res) => {
-  const { MaBan, monAn } = req.body; // monAn = [{MaMon, SoLuong}]
-  const MaOder = "OD" + Date.now();
+  const { MaBan } = req.body;
   const TaiKhoanID = req.session.user ? req.session.user.ID : null;
 
-  // Kiểm tra đăng nhập
   if (!TaiKhoanID) {
     return res.status(401).send("Bạn cần đăng nhập để order món!");
   }
 
-  // Chèn vào bảng Oder (KHÔNG có MaHD vì chưa thanh toán)
+  const MaOder = "OD" + Date.now();
+
+  // 🔥 CHỖ NÀY — FIX monAn thành array đúng
+  const monAn = [];
+  req.body.monAn.MaMon.forEach((maMon, i) => {
+    monAn.push({
+      MaMon: maMon,
+      SoLuong: req.body.monAn.SoLuong[i],
+      GiChu: req.body.monAn.GiChu[i] || ''
+    });
+  });
+
+  console.log("MONAN ARRAY =", monAn);  // Debug để bạn thấy GiChu đã vào
+
+  // INSERT Oder
   const sqlOder = `
     INSERT INTO Oder (MaOder, ThoiGian, MaBan, TaiKhoanID)
     VALUES (?, NOW(), ?, ?)
@@ -83,21 +95,24 @@ router.post("/save", (req, res) => {
   db.query(sqlOder, [MaOder, MaBan, TaiKhoanID], err => {
     if (err) throw err;
 
-    // Thêm chi tiết món ăn
+    // INSERT chi tiết món ăn
     const sqlChiTiet = `
-      INSERT INTO Oder_Monan (MaOder, MaMon, SoLuong)
+      INSERT INTO Oder_Monan (MaOder, MaMon, SoLuong, GiChu)
       VALUES ?
     `;
-    const values = monAn.map(m => [MaOder, m.MaMon, m.SoLuong]);
+
+    const values = monAn.map(m => [
+      MaOder, m.MaMon, m.SoLuong, m.GiChu
+    ]);
 
     db.query(sqlChiTiet, [values], err2 => {
       if (err2) throw err2;
 
-      // Sau khi lưu order xong → quay lại trang order của bàn
       res.redirect(`/order/${MaBan}`);
     });
   });
 });
+// Hiển thị lịch sử order trong ngày
 router.get("/history", (req, res) => {
     // Tính ngày hôm nay từ 00:00:00 -> 23:59:59
     const startOfDay = new Date();
