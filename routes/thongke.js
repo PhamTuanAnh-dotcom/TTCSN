@@ -2,9 +2,20 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db'); 
 
-router.get("/thongke", async (req, res) => {
+// Hàm tiện ích để thực hiện truy vấn SQL (từ file JS ban đầu)
+function queryPromise(sql, params) {
+    return new Promise((resolve, reject) => {
+        db.query(sql, params, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
+    });
+}
+// Chuyển db thành promise-based connection (đã có trong code gốc, giữ nguyên)
+const conn = db.promise(); 
 
-    const conn = db.promise();   
+router.get("/thongke", async (req, res) => {
+    // Check session, etc. (Bạn có thể tự thêm nếu cần)
 
     let month = req.query.month;
     let selectedMonth, selectedYear;
@@ -24,7 +35,6 @@ router.get("/thongke", async (req, res) => {
         FROM ThanhToan
         ORDER BY nam DESC, thang DESC
     `);
-
     const [rows] = await conn.query(`
         SELECT
             WEEK(NgayGio, 1) - WEEK(DATE_FORMAT(NgayGio, '%Y-%m-01'), 1) + 1 AS Tuan,
@@ -49,10 +59,12 @@ router.get("/thongke", async (req, res) => {
     const labels = rows.map(r => `Tuần ${r.Tuan}`);
     const values = rows.map(r => r.DoanhThu);
 
-   const tongDoanhThu = values
-    .map(v => Number(v) || 0)   // đảm bảo mọi giá trị là số
-    .reduce((a, b) => a + b, 0)
-    .toFixed(1);
+    const rawTotal = values
+     .map(v => Number(v) || 0) 
+     .reduce((a, b) => a + b, 0);
+
+    // ✅ Làm tròn đến 3 chữ số thập phân.
+    const tongDoanhThu = rawTotal.toFixed(3); 
     
     res.render("thongke", {
         monthList,

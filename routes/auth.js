@@ -75,7 +75,7 @@ router.post("/register", async (req, res) => {
         console.error(" Lỗi MySQL:", err);
         return res.send(" Lỗi khi đăng ký!");
       }
-      return res.render("home", { error: "đăng kí thành công" });
+      return res.render("home_ql", { error: "đăng kí thành công" });
     });
   } catch (error) {
     console.error("Lỗi hệ thống:", error);
