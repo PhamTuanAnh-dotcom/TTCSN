@@ -15,8 +15,8 @@ router.post("/login", (req, res) => {
 
     // Kiểm tra tài khoản tồn tại
     if (results.length === 0) {
-      // Trả về câu thông báo: "tài khoản ko tồn tại"
-      return res.render("home", { error: "tài khoản ko tồn tại" });
+      // Trả về câu thông báo: "tài khoản không tồn tại"
+      return res.render("home", { error: "Tài khoản không tồn tại" });
     }
 
     const user = results[0];
@@ -41,7 +41,7 @@ router.post("/login", (req, res) => {
         }
       } else {
         // Trả về câu thông báo: "mật khẩu sai"
-        return res.render("home", { error: "mật khẩu sai" });
+        return res.render("home", { error: "Mật khẩu sai" });
       }
     });
   });
