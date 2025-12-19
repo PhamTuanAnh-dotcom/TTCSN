@@ -5,67 +5,53 @@ const db = require('../db');
 const conn = db.promise();
 
 router.get("/thongke", async (req, res) => {
-  try {
-    let { from, to } = req.query;
+    const { from, to } = req.query;
 
-    // 🔹 Nếu chưa chọn ngày → mặc định 7 ngày gần nhất
-    if (!from || !to) {
-      const today = new Date();
-      const prior = new Date();
-      prior.setDate(today.getDate() - 6);
+    // Mặc định hôm nay
+    const fromDate = from || new Date().toISOString().slice(0, 10);
+    const toDate   = to   || fromDate;
 
-      from = prior.toISOString().split("T")[0];
-      to   = today.toISOString().split("T")[0];
-    }
-
-    // 🔹 Doanh thu theo NGÀY
-    const [rows] = await conn.query(`
-      SELECT 
-        DATE(NgayGio) AS Ngay,
-        SUM(TongTien) / 1000000 AS DoanhThu
-      FROM ThanhToan
-      WHERE TrangThaiThanhToan = 'Da thanh toan'
+    // 1️⃣ Doanh thu theo ngày
+    const sqlRevenue = `
+        SELECT DATE(NgayGio) AS Ngay, 
+               SUM(TongTien) / 1000000 AS DoanhThu
+        FROM ThanhToan
+        WHERE TrangThaiThanhToan = 'Da thanh toan'
         AND DATE(NgayGio) BETWEEN ? AND ?
-      GROUP BY DATE(NgayGio)
-      ORDER BY Ngay
-    `, [from, to]);
+        GROUP BY DATE(NgayGio)
+        ORDER BY DATE(NgayGio)
+    `;
 
-    // 🔹 Món bán chạy (không đổi)
-    const [popularFoods] = await conn.query(`
-      SELECT MonAn.TenMon, SUM(Oder_Monan.SoLuong) AS SoLanGoi
-      FROM Oder_Monan
-      JOIN MonAn ON MonAn.MaMon = Oder_Monan.MaMon
-      GROUP BY Oder_Monan.MaMon
-      ORDER BY SoLanGoi DESC
-      LIMIT 7;
-    `);
+    // 2️⃣ Món thịnh hành theo thời gian chọn
+    const sqlPopular = `
+        SELECT m.TenMon, SUM(om.SoLuong) AS SoLanGoi
+        FROM Oder_Monan om
+        JOIN MonAn m ON om.MaMon = m.MaMon
+        JOIN Oder o ON om.MaOder = o.MaOder
+        JOIN ThanhToan tt ON o.MaHD = tt.MaHD
+        WHERE tt.TrangThaiThanhToan = 'Da thanh toan'
+        AND DATE(tt.NgayGio) BETWEEN ? AND ?
+        GROUP BY m.MaMon, m.TenMon
+        ORDER BY SoLanGoi DESC
+        LIMIT 5
+    `;
 
-    // 🔹 Dữ liệu cho chart
-    const labels = rows.map(r => {
-      const d = new Date(r.Ngay);
-      return `${d.getDate()}/${d.getMonth() + 1}`;
-    });
+    const [revenue] = await db.query(sqlRevenue, [fromDate, toDate]);
+    const [popularFoods] = await db.query(sqlPopular, [fromDate, toDate]);
 
-    const values = rows.map(r => Number(r.DoanhThu) || 0);
-
-    // 🔹 Tổng doanh thu
-    const tongDoanhThu = values
-      .reduce((a, b) => a + b, 0)
-      .toFixed(3);
+    const labels = revenue.map(r => r.Ngay);
+    const values = revenue.map(r => r.DoanhThu);
+    const tongDoanhThu = values.reduce((a, b) => a + b, 0).toFixed(2);
 
     res.render("thongke", {
-      from,
-      to,
-      labels,
-      values,
-      popularFoods,
-      tongDoanhThu
+        labels,
+        values,
+        popularFoods,
+        tongDoanhThu,
+        from: fromDate,
+        to: toDate
     });
-
-  } catch (err) {
-    console.error("Lỗi thống kê:", err);
-    res.status(500).send("Lỗi server thống kê");
-  }
 });
+
 
 module.exports = router;
