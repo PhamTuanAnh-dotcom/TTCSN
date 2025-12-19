@@ -202,18 +202,25 @@
   </main>
 
   <!-- Popup login -->
-  <div id="loginOverlay">
-    <div id="loginBox">
-      <button id="closeBtn">&times;</button>
-      <i class="fa fa-user-circle" style="font-size:50px;color:#007bff;"></i>
-      <h2>Đăng nhập hệ thống</h2>
-      <form action="/auth/login" method="POST">
-        <input type="text" name="TaiKhoan" placeholder="Tên đăng nhập" required>
-        <input type="password" name="MatKhau" placeholder="Mật khẩu" required>
-        <button type="submit">Đăng nhập</button>
-      </form>
-    </div>
+ <div id="loginOverlay">
+  <div id="loginBox">
+    <button id="closeBtn">&times;</button>
+    <i class="fa fa-user-circle" style="font-size:50px;color:#007bff;"></i>
+    <h2>Đăng nhập hệ thống</h2>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div style="color: #e74c3c; background: #fdf2f2; padding: 10px; border-radius: 5px; margin-top: 10px; font-weight: bold; border: 1px solid #fab1a0;">
+        <i class="fa fa-exclamation-triangle"></i> <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/auth/login" method="POST">
+      <input type="text" name="TaiKhoan" placeholder="Tên đăng nhập" required>
+      <input type="password" name="MatKhau" placeholder="Mật khẩu" required>
+      <button type="submit">Đăng nhập</button>
+    </form>
   </div>
+</div>
 
   <script>
     const btnLoginHeader = document.getElementById("btnLoginHeader");
@@ -235,6 +242,11 @@
 
     closeBtn.onclick = function() { overlay.style.display = "none"; };
     overlay.onclick = function(e) { if (e.target === overlay) overlay.style.display = "none"; };
+    window.onload = function() {
+    <% if (typeof error !== 'undefined' && error) { %>
+      showLogin();
+    <% } %>
+  };
   </script>
 </body>
 </html>

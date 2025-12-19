@@ -4,8 +4,47 @@ const bcrypt = require("bcrypt");
 const db = require("../db");
 
 // ------------------- TRANG ĐĂNG NHẬP -------------------
-router.get("/login", (req, res) => {
-  res.render("dangnhap");
+router.post("/login", (req, res) => {
+  const { TaiKhoan, MatKhau } = req.body;
+
+  db.query("SELECT * FROM TaiKhoan WHERE TaiKhoan = ?", [TaiKhoan], (err, results) => {
+    if (err) {
+      console.error(" Lỗi MySQL:", err);
+      return res.send(" Lỗi khi đăng nhập!");
+    }
+
+    // Kiểm tra tài khoản tồn tại
+    if (results.length === 0) {
+      // Trả về câu thông báo: "tài khoản ko tồn tại"
+      return res.render("home", { error: "tài khoản ko tồn tại" });
+    }
+
+    const user = results[0];
+
+    bcrypt.compare(MatKhau, user.MatKhau, (err, isMatch) => {
+      if (err) {
+        console.error(" Lỗi bcrypt:", err);
+        return res.send(" Lỗi khi đăng nhập!");
+      }
+
+      if (isMatch) {
+        req.session.user = {
+          ID: user.ID,
+          HoTen: user.HoTen,
+          IDVaiTro: user.IDVaiTro
+        };
+        switch (user.IDVaiTro) {
+          case "QL": return res.redirect("/home_ql");
+          case "NV": return res.redirect("/home_nv");
+          case "BEP": return res.redirect("/home_bep");
+          default: return res.send(" Vai trò không hợp lệ!");
+        }
+      } else {
+        // Trả về câu thông báo: "mật khẩu sai"
+        return res.render("home", { error: "mật khẩu sai" });
+      }
+    });
+  });
 });
 
 // ------------------- TRANG ĐĂNG KÝ -------------------
