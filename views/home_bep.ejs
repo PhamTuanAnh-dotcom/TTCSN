@@ -6,13 +6,13 @@
   <link rel="stylesheet" href="/css/home_bep.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <style>
-  body {
+body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #e0e0e0; /* nền tổng thể sáng xám */
+  background: #e0e0e0;
 }
-
 .container {
   display: flex;
   min-height: 100vh;
@@ -20,48 +20,72 @@
 
 /* Sidebar */
 .sidebar {
-  width: 200px;
+  width: 220px;
   background: #2c3e50;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Logo */
+.logo {
   padding: 20px 0;
-}
-
-.logo h3 {
   text-align: center;
-  margin: 0 0 30px 0;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
+/* Menu */
 .menu {
   list-style: none;
-  padding: 0;
+  padding: 10px 0;
   margin: 0;
 }
 
 .menu li {
-  padding: 8px 20px;
-  display: flex;
-  align-items: center;
-  margin: 0;
-}
-
-.menu li.active {
-  background: #d0d0d0;
-}
-
-.menu li i {
-  margin-right: 8px;
+  margin: 4px 0;
 }
 
 .menu li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: #ecf0f1;
   text-decoration: none;
-  color: white;
-  flex: 1;
+  font-size: 14px;
+  border-left: 4px solid transparent;
+  transition: all 0.25s ease;
 }
 
-.logout {
+.menu li a i {
+  width: 18px;
   text-align: center;
-  padding: 10px;
+}
+
+/* Hover */
+.menu li a:hover {
+  background: #34495e;
+  border-left: 4px solid #f1c40f;
+  color: #f1c40f;
+}
+
+/* Active */
+.menu li.active a {
+  background: #1abc9c;
+  border-left: 4px solid #16a085;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Logout */
+.logout {
+  margin-top: auto;
+  padding: 15px;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .logout a {
@@ -70,138 +94,205 @@
   font-weight: bold;
 }
 
-/* Main content */
+.logout a:hover {
+  text-decoration: underline;
+}
+
+/* Main */
 .main {
   flex: 1;
   padding: 20px;
-  overflow-y: auto;
 }
-
 .main h1 {
   text-align: center;
-  margin-bottom: 30px;
-  font-size: 24px;
-  color: #333;
+  margin-bottom: 25px;
 }
 
-/* Danh sách bàn */
+/* Order card */
 .ban-list {
   display: flex;
   flex-direction: column;
   gap: 15px;
   align-items: center;
 }
-
 .ban-item {
   background: #fff;
-  border-radius: 8px;
   width: 80%;
   padding: 15px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
-
 .ban-item h3 {
-  margin: 0;
-  font-size: 18px;
-  color: #333;
+  margin: 0 0 5px;
 }
-
 .ban-item p {
-  margin: 0;
-  font-size: 14px;
-  color: #555;
+  margin: 3px 0;
 }
 
-.ban-item ul {
-  list-style: none;
-  padding-left: 15px;
-  margin: 0;
+/* Item */
+.mon-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+.mon-item em {
+  font-size: 12px;
+  color: #777;
+}
+.cancel-item-btn {
+  border: none;
+  background: transparent;
+  color: #e74c3c;
+  font-size: 16px;
+  cursor: pointer;
+}
+.cancel-item-btn:hover {
+  color: #c0392b;
 }
 
-.ban-item ul li {
-  padding: 3px 0;
-  font-size: 14px;
-  color: #555;
+/* Buttons */
+.action-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
 }
-
-/* Nút hoàn thành */
 .done-btn {
-  align-self: flex-end;
   background: #27ae60;
   color: #fff;
   border: none;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
 }
-
 .done-btn:hover {
   background: #2ecc71;
 }
-
+.cancel-btn {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.cancel-btn:hover {
+  background: #ff6b5a;
+}
 </style>
+
 <body>
-  <div class="container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="logo">
-        <h3>🍳 BẾP</h3>
-      </div>
-      <ul class="menu">
-        <li class="active"><i class="fa-solid fa-house"></i> <a href="home_bep.ejs">Trang chủ</a></li>
-        <li><i class="fa-solid fa-user"></i> <a href="#">Thông tin cá nhân</a></li>
-      </ul>
-      <div class="logout">
-        <a href="/auth/logout">Đăng xuất</a>
-      </div>
-    </aside>
+<div class="container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <h3>🍳 BẾP</h3>
+    </div>
+    <ul class="menu">
+  <li class="active">
+    <a href="/home_bep">
+      <i class="fa-solid fa-house"></i> Trang chủ
+    </a>
+  </li>
+  <li>
+    <a href="#">
+      <i class="fa-solid fa-user"></i> Thông tin cá nhân
+    </a>
+  </li>
+</ul>
 
-    <!-- Main content -->
-    <main class="main">
-      <h1>NHÀ HÀNG SIÊU CẤP VIP PRO</h1>
+    <div class="logout">
+      <a href="/auth/logout">Đăng xuất</a>
+    </div>
+  </aside>
 
-      <div class="ban-list">
-        <% if (orders && orders.length > 0) { %>
-          <% orders.forEach(order => { %>
-            <div class="ban-item">
-              <h3>Bàn <%= order.MaBan %></h3>
-              <p><strong>Mã Order:</strong> <%= order.MaOder %></p>
-              <ul>
-                <% order.monAnList.forEach(mon => { %>
-                  <li>
+  <!-- Main -->
+  <main class="main">
+    <h1>NHÀ HÀNG SIÊU CẤP VIP PRO</h1>
+
+    <div class="ban-list">
+      <% if (orders && orders.length > 0) { %>
+        <% orders.forEach(order => { %>
+          <div class="ban-item">
+            <h3>Bàn <%= order.MaBan %></h3>
+            <p><strong>Mã Order:</strong> <%= order.MaOder %></p>
+
+            <ul>
+              <% order.monAnList.forEach(mon => { %>
+                <li class="mon-item">
+                  <span>
                     <%= mon.TenMon %> - <%= mon.SoLuong %> phần
-                  </li>
-                  <li>
-                    Ghi chú: <%= mon.GiChu || 'Không có' %>
-                  </li>
-                <% }) %>
-              </ul>
-              <button class="done-btn" onclick="hoanThanh('<%= order.MaOder %>')">Hoàn thành</button>
-            </div>
-          <% }) %>
-        <% } else { %>
-          <p>Hiện chưa có đơn hàng nào cần chế biến.</p>
-        <% } %>
-      </div>
-    </main>
-  </div>
+                    <% if (mon.GiChu) { %>
+                      <em>(<%= mon.GiChu %>)</em>
+                    <% } %>
+                  </span>
+                  <button class="cancel-item-btn"
+                    onclick="huyItem('<%= order.MaOder %>','<%= mon.MaMon %>')">
+                    ✖
+                  </button>
+                </li>
+              <% }) %>
+            </ul>
 
-  <script>
-    function hoanThanh(maOder) {
+            <div class="action-btns">
+              <button class="done-btn"
+                onclick="hoanThanh('<%= order.MaOder %>')">
+                Hoàn thành
+              </button>
+
+              <button class="cancel-btn"
+                onclick="huyOrder('<%= order.MaOder %>')">
+                Hủy Order
+              </button>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p>Hiện chưa có đơn hàng nào cần chế biến.</p>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<script>
+function hoanThanh(maOder) {
   if (confirm(`Xác nhận hoàn thành order ${maOder}?`)) {
     fetch(`/home_bep/hoan-thanh/${maOder}`, { method: "POST" })
       .then(res => res.text())
       .then(msg => {
-        alert(msg);        
-        location.reload(); 
-      })
-      .catch(err => console.error(err));
+        alert(msg);
+        location.reload();
+      });
   }
 }
+
+function huyOrder(maOder) {
+  if (confirm(`❌ Xác nhận HỦY order ${maOder}?`)) {
+    fetch(`/home_bep/cancel-order/${maOder}`, { method: "POST" })
+      .then(res => res.text())
+      .then(msg => {
+        alert(msg);
+        location.reload();
+      });
+  }
+}
+
+function huyItem(maOder, maMon) {
+  if (confirm("Hủy món này?")) {
+    fetch("/home_bep/cancel-item", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ MaOder: maOder, MaMon: maMon })
+    })
+      .then(res => res.text())
+      .then(msg => {
+        alert(msg);
+        location.reload();
+      });
+  }
+}
+
 // ✅ Dữ liệu quản lý từ server (Node truyền vào)
    const chef = {
   hoten: "<%= chef?.HoTen || '' %>",

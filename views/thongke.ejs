@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Thống kê doanh thu</title>
@@ -34,13 +35,15 @@
             border-radius: 5px;
         }
 
-        .sidebar a:hover, .sidebar .active {
+        .sidebar a:hover,
+        .sidebar .active {
             background: #34495e;
         }
+
         .sidebar .logout {
-           text-align: center;
-           padding: 10px;
-           border-top: 1px solid #47525d;
+            text-align: center;
+            padding: 10px;
+            border-top: 1px solid #47525d;
         }
 
         /* Content */
@@ -92,7 +95,8 @@
             margin-top: 12px;
         }
 
-        table th, table td {
+        table th,
+        table td {
             padding: 6px;
             border-bottom: 1px solid #ccc;
         }
@@ -102,7 +106,6 @@
             font-size: 20px;
             font-weight: bold;
         }
-
     </style>
 </head>
 
@@ -119,7 +122,7 @@
             <a href="/auth/logout" class="logout-btn" style="color:#f39c12; text-decoration:none;">🚪 Đăng xuất</a>
         </div>
     </div>
-    
+
     <!-- Nội dung -->
     <div class="content">
 
@@ -127,18 +130,16 @@
 
         <!-- Dropdown chọn tháng -->
         <div class="top-row">
-            <select id="monthSelect" onchange="onChangeMonth()">
-                <option disabled>Thời gian (Tháng)</option>
+            <form method="GET" action="/thongke/thongke" style="display:flex; gap:10px;">
+                <label>Từ ngày:</label>
+                <input type="date" name="from" value="<%= from %>">
 
-                <% monthList.forEach(m => { %>
-                    <option value="<%= m.thang %>-<%= m.nam %>"
-                        <%= (m.thang == selectedMonth && m.nam == selectedYear) ? "selected" : "" %>>
-                        Tháng <%= m.thang %> - <%= m.nam %>
-                    </option>
-                <% }) %>
-            </select>
+                <label>Đến ngày:</label>
+                <input type="date" name="to" value="<%= to %>">
+
+                <button type="submit">Thống kê</button>
+            </form>
         </div>
-
         <!-- Khu vực biểu đồ + món thịnh hành -->
         <div class="stat-area">
 
@@ -153,19 +154,25 @@
                         <th>Tên</th>
                         <th>Số lần gọi</th>
                     </tr>
-                    <% popularFoods.forEach(p => { %>
+                    <% popularFoods.forEach(p=> { %>
                         <tr>
-                            <td><%= p.TenMon %></td>
-                            <td><%= p.SoLanGoi %></td>
+                            <td>
+                                <%= p.TenMon %>
+                            </td>
+                            <td>
+                                <%= p.SoLanGoi %>
+                            </td>
                         </tr>
-                    <% }) %>
+                        <% }) %>
                 </table>
             </div>
 
         </div>
 
         <div class="bottom-text">
-            Tổng doanh thu tháng: <span id="tongDoanhThu"><%= tongDoanhThu %></span> triệu đồng
+            Tổng doanh thu : <span id="tongDoanhThu">
+                <%= tongDoanhThu %>
+            </span> triệu đồng
         </div>
 
     </div>
@@ -173,40 +180,47 @@
     <!-- JS xử lý biểu đồ -->
     <script>
     const ctx = document.getElementById('chartDoanhThu');
-    const values = <%- JSON.stringify(values.map(Number)) %>;
+
+    const labels = <%- JSON.stringify(labels) %>;
+    const values = <%- JSON.stringify(values) %>.map(Number);
+
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: <%- JSON.stringify(labels) %>,
+            labels: labels,
             datasets: [{
                 label: 'Doanh thu (triệu đồng)',
-                data: <%- JSON.stringify(values.map(v => Number(v))) %>,  
+                data: values,
                 borderWidth: 3,
                 borderColor: "blue",
                 backgroundColor: "rgba(0,123,255,0.3)",
-                tension: 0.3
+                tension: 0.3,
+                fill: true
             }]
         },
         options: {
+            responsive: true,
             scales: {
                 y: {
                     beginAtZero: true,
-                    suggestedMax: Math.max(...values.map(v => Number(v)), 0.001) * 1.3,
-                    title: { display: true, text: 'Doanh thu (triệu)' }
+                    suggestedMax: values.length > 0
+                        ? Math.max(...values) * 1.3
+                        : 1,
+                    title: {
+                        display: true,
+                        text: 'Doanh thu (triệu)'
+                    }
                 },
                 x: {
-                    title: { display: true, text: 'Các tuần trong tháng' }
+                    title: {
+                        display: true,
+                        text: 'Ngày'
+                    }
                 }
             }
         }
     });
 </script>
-    <script>
-        function onChangeMonth() {
-            const select = document.getElementById('monthSelect');
-            const value = select.value;  // "thang-nam"
-            window.location.href = `/thongke?month=${value}`;
-        }
-    </script>
 </body>
+
 </html>

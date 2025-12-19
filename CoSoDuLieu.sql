@@ -162,4 +162,13 @@ INSERT INTO BanAn (MaBan, ViTri, TrangThai) VALUES
 ('307', 'Bàn 307', 'Trong'),
 ('308', 'Bàn 308', 'Trong'),
 ('309', 'Bàn 309', 'Trong');
-select * from Oder_Monan;
+
+ALTER TABLE Oder 
+MODIFY TrangThai 
+ENUM('Chua hoan thanh','Da hoan thanh','Da huy')
+DEFAULT 'Chua hoan thanh';
+
+ALTER TABLE Oder_Monan
+ADD TrangThai ENUM('Binh thuong','Da huy') DEFAULT 'Binh thuong';
+
+

@@ -97,6 +97,47 @@ router.post("/hoan-thanh/:maOder", (req, res) => {
         return res.send(`Đã hoàn thành order ${maOder}`);
     });
 });
+// ❌ HỦY ORDER
+router.post("/cancel-order/:maOder", (req, res) => {
+  const { maOder } = req.params;
+
+  if (!maOder) {
+    return res.status(400).send("Thiếu mã order!");
+  }
+
+  const sql = `
+    UPDATE Oder
+    SET TrangThai = 'Da huy'
+    WHERE MaOder = ?
+      AND TrangThai = 'Chua hoan thanh'
+  `;
+
+  db.query(sql, [maOder], (err, result) => {
+    if (err) return res.status(500).send("Lỗi hủy order!");
+
+    if (result.affectedRows === 0) {
+      return res.send("❌ Order không thể hủy (đã hoàn thành hoặc đã thanh toán)");
+    }
+
+    res.send("✅ Đã hủy order thành công!");
+  });
+});
+// ❌ HỦY MÓN trong order
+router.post("/cancel-item", (req, res) => {
+  const { MaOder, MaMon } = req.body;
+
+  const sql = `
+    UPDATE Oder_Monan
+    SET TrangThai = 'Da huy'
+    WHERE MaOder = ? AND MaMon = ?
+  `;
+
+  db.query(sql, [MaOder, MaMon], err => {
+    if (err) return res.status(500).send("Lỗi hủy món!");
+
+    res.send("✅ Đã hủy món!");
+  });
+});
 
 
 // Cập nhật thông tin nhân viên bếp
