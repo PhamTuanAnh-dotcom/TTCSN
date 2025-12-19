@@ -8,25 +8,42 @@ router.get("/bill/:MaBan", (req, res) => {
   const { MaBan } = req.params;
 
   const sql = `
-    SELECT o.MaOder, m.TenMon, m.GiaBan, om.SoLuong, (m.GiaBan * om.SoLuong) AS ThanhTien
+    SELECT
+      m.MaMon,
+      m.TenMon,
+      m.GiaBan,
+      SUM(om.SoLuong) AS SoLuong,
+      SUM(m.GiaBan * om.SoLuong) AS ThanhTien
     FROM Oder o
     JOIN Oder_Monan om ON o.MaOder = om.MaOder
     JOIN MonAn m ON om.MaMon = m.MaMon
-    WHERE o.MaBan = ? AND o.MaHD IS NULL
-    ORDER BY o.ThoiGian;
+    WHERE o.MaBan = ? 
+      AND o.MaHD IS NULL
+      AND o.TrangThai = 'Da hoan thanh'
+    GROUP BY m.MaMon, m.TenMon, m.GiaBan
+    ORDER BY m.TenMon;
   `;
+
   db.query(sql, [MaBan], (err, result) => {
     if (err) throw err;
+
     if (result.length === 0) {
       return res.send("❌ Bàn này chưa có order nào cần thanh toán!");
     }
 
-    const tongTien = result.reduce((sum, item) => sum + parseFloat(item.ThanhTien), 0);
-    // Lấy danh sách Mã Order duy nhất để hiển thị
-    const MaOderList = [...new Set(result.map(r => r.MaOder))];
+    const tongTien = result.reduce(
+      (sum, item) => sum + Number(item.ThanhTien),
+      0
+    );
+
     const TenNhanVien = req.session.user?.HoTen || "Chưa xác định";
 
-    res.render("bill", { MaBan, dsMonAn: result, tongTien, TenNhanVien, MaOderList });
+    res.render("bill", {
+      MaBan,
+      dsMonAn: result,
+      tongTien,
+      TenNhanVien
+    });
   });
 });
 
@@ -73,17 +90,18 @@ router.post("/save", (req, res) => {
     return res.status(401).send("Bạn cần đăng nhập để order món!");
   }
 
-  // ✅ ÉP monAn thành mảng
-  let dsMonAn = [];
-  if (Array.isArray(monAn)) {
-    dsMonAn = monAn;
-  } else if (monAn) {
-    dsMonAn = [monAn];
-  } else {
-    return res.status(400).send("Không có món ăn nào!");
+  if (!monAn || !monAn.MaMon || !monAn.SoLuong) {
+    return res.status(400).send("Dữ liệu món ăn không hợp lệ!");
   }
 
-  // 1. Thêm Oder
+  // ✅ CHUYỂN FORM → DANH SÁCH MÓN CHUẨN
+  const dsMonAn = monAn.MaMon.map((maMon, index) => ({
+    MaMon: maMon,
+    SoLuong: Number(monAn.SoLuong[index]),
+    GiChu: monAn.GiChu ? monAn.GiChu[index] : null
+  }));
+
+  // 1️⃣ Thêm Oder
   const sqlOder = `
     INSERT INTO Oder (MaOder, ThoiGian, MaBan, TaiKhoanID)
     VALUES (?, NOW(), ?, ?)
@@ -92,22 +110,26 @@ router.post("/save", (req, res) => {
   db.query(sqlOder, [MaOder, MaBan, TaiKhoanID], err => {
     if (err) return res.status(500).send("Lỗi khi thêm Oder!");
 
-    // 2. Thêm chi tiết món
+    // 2️⃣ Thêm chi tiết món
     const sqlChiTiet = `
-      INSERT INTO Oder_Monan (MaOder, MaMon, SoLuong)
+      INSERT INTO Oder_Monan (MaOder, MaMon, SoLuong, GiChu)
       VALUES ?
     `;
 
     const values = dsMonAn.map(m => [
       MaOder,
       m.MaMon,
-      parseInt(m.SoLuong)
+      m.SoLuong,
+      m.GiChu
     ]);
 
     db.query(sqlChiTiet, [values], err2 => {
-      if (err2) return res.status(500).send("Lỗi chi tiết món!");
+      if (err2) {
+        console.error(err2);
+        return res.status(500).send("Lỗi chi tiết món!");
+      }
 
-      // 3. Cập nhật bàn
+      // 3️⃣ Cập nhật trạng thái bàn
       db.query(
         "UPDATE BanAn SET TrangThai = 'Dang phuc vu' WHERE MaBan = ?",
         [MaBan],
@@ -122,11 +144,12 @@ router.post("/save", (req, res) => {
 
 
 
+
 // ✅ ROUTE MỚI: Lấy TẤT CẢ Order (Đã thanh toán và Chưa thanh toán)
 router.get("/all-history", (req, res) => {
     const sql = `
         SELECT 
-            o.MaOder, o.ThoiGian, o.MaBan, o.MaHD, 
+            o.MaOder, o.ThoiGian, o.MaBan, o.MaHD, o.TrangThai,
             t.HoTen AS NhanVien, m.TenMon, om.SoLuong, m.GiaBan,
             (m.GiaBan * om.SoLuong) AS ThanhTien
         FROM Oder o
@@ -152,6 +175,7 @@ router.get("/all-history", (req, res) => {
                     NhanVien: item.NhanVien,
                     MaHD: item.MaHD, // Lấy mã hóa đơn để xác định trạng thái
                     TrangThai: item.MaHD ? 'Đã thanh toán' : 'Chưa thanh toán',
+                    TrangThaiOrder: item.TrangThai,
                     dsMon: [],
                     TongTien: 0
                 };
@@ -181,7 +205,7 @@ router.get("/pending-orders", (req, res) => {
         JOIN Oder_Monan om ON o.MaOder = om.MaOder
         JOIN MonAn m ON om.MaMon = m.MaMon
         LEFT JOIN TaiKhoan t ON o.TaiKhoanID = t.ID
-        WHERE o.MaHD IS NULL
+        WHERE o.MaHD IS NULL AND o.TrangThai = 'Chua hoan thanh'
         ORDER BY o.MaBan ASC, o.ThoiGian DESC
     `;
     db.query(sql, (err, results) => {
@@ -237,7 +261,7 @@ router.post("/pay", (req, res) => {
       if (err2) throw err2;
 
       // 2. Gắn MaHD cho các Oder chưa thanh toán của bàn đó
-      const sqlUpdate = `UPDATE Oder SET MaHD = ? WHERE MaBan = ? AND MaHD IS NULL`;
+      const sqlUpdate = `UPDATE Oder SET MaHD = ? WHERE MaBan = ? AND MaHD IS NULL AND TrangThai = 'Da hoan thanh'`;
       db.query(sqlUpdate, [MaHD, MaBan], err3 => {
           if (err3) throw err3;
 

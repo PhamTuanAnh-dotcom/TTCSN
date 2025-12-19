@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử TẤT CẢ Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .history-container {
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+        h2 {
+            font-weight: 700;
+            color: #007bff;
+        }
+        .order-card {
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: white;
+            border: 1px solid #ddd;
+        }
+        .card-header-pending {
+            background-color: #ffe0b2; /* Cam nhạt - Chưa thanh toán */
+            color: #e65100;
+            border-bottom: 1px solid #ffcc80;
+        }
+        .card-header-paid {
+            background-color: #c8e6c9; /* Xanh lá nhạt - Đã thanh toán */
+            color: #388e3c;
+            border-bottom: 1px solid #a5d6a7;
+        }
+        .card-header-custom {
+            padding: 12px 15px;
+            font-weight: bold;
+            border-top-left-radius: 9px;
+            border-top-right-radius: 9px;
+            font-size: 1.1rem;
+        }
+        .order-details {
+            padding: 15px;
+        }
+        .item-list ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .item-list li {
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+        }
+        .total-footer {
+            padding: 10px 15px;
+            border-top: 1px solid #eee;
+            background-color: #f2f2f2;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="history-container">
+        <h2 class="mb-4 text-center">🧾 Lịch Sử TẤT CẢ Order</h2>
+        
+        <% if (orders.length === 0) { %>
+            <div class="alert alert-info text-center" role="alert">
+                Chưa có Order nào được ghi nhận trong hệ thống.
+            </div>
+        <% } else { %>
+            <div class="row">
+                <% orders.forEach(o => { %>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="order-card">
+                            <% 
+                                let headerClass = o.MaHD ? 'card-header-paid' : 'card-header-pending';
+                                let statusText = o.MaHD ? 'Đã thanh toán' : 'CHƯA thanh toán';
+                            %>
+                            <div class="card-header-custom <%= headerClass %> d-flex justify-content-between align-items-center">
+                                <span>Bàn <%= o.MaBan %> - <%= statusText %></span>
+                                <% if (!o.MaHD) { %>
+                                    <a href="/order/bill/<%= o.MaBan %>" class="btn btn-sm btn-danger">Thanh toán ngay</a>
+                                <% } %>
+                            </div>
+                            <div class="order-details">
+                                <p class="mb-1"><strong>Mã Order:</strong> <%= o.MaOder %></p>
+                                <p class="mb-1"><strong>Thời gian:</strong> <%= new Date(o.ThoiGian).toLocaleString('vi-VN') %></p>
+                                <p class="mb-1"><strong>Nhân viên:</strong> <%= o.NhanVien || 'Không rõ' %></p>
+                                <% if (o.MaHD) { %>
+                                    <p class="mb-1 text-success"><strong>Mã HĐ:</strong> <%= o.MaHD %></p>
+                                <% } %>
+                                <h6>Chi tiết món ăn:</h6>
+                                <div class="item-list">
+                                    <ul>
+                                        <% o.dsMon.forEach(mon => { %>
+                                            <li>
+                                                <span><%= mon.TenMon %></span>
+                                                <span><%= mon.SoLuong %> x <%= mon.GiaBan.toLocaleString() %> ₫</span>
+                                            </li>
+                                        <% }) %>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="total-footer text-end">
+                                <strong>Tổng cộng: <%= o.TongTien.toLocaleString() %> ₫</strong>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -97,7 +97,6 @@
         </p>
       </div>
       <div>
-          <p><strong>Mã Order:</strong> <%= MaOderList.join(", ") %></p>
         </>
         <p><strong>Nhân viên:</strong>
           <%= TenNhanVien || 'Chưa xác định' %>
@@ -146,7 +145,6 @@
     <form action="/order/final-pay" method="GET">
         <input type="hidden" name="MaBan" value="<%= MaBan %>">
         <input type="hidden" name="TongTien" value="<%= tongTien %>">
-        <input type="hidden" name="MaOderList" value="<%= MaOderList.join(',') %>">
         <input type="hidden" name="TenNhanVien" value="<%= TenNhanVien %>">
         <button type="submit" class="btn btn-primary btn-primary-custom">
           ✅ Chuyển đến Thanh toán

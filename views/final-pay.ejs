@@ -67,7 +67,6 @@
         <div class="summary">
             <p><strong>Bàn:</strong> <%= MaBan %></p>
             <p><strong>Nhân viên:</strong> <%= TenNhanVien %></p>
-            <p><strong>Mã Order:</strong> <%= MaOderList.join(', ') %></p>
         </div>
 
         <div class="total-amount">
@@ -77,7 +76,7 @@
         <form action="/order/pay" method="POST">
             <input type="hidden" name="MaBan" value="<%= MaBan %>">
             <input type="hidden" name="TongTien" value="<%= TongTien %>">
-            <input type="hidden" name="MaOderList" value="<%= MaOderList.join(',') %>">
+            <input type="hidden" name="TenNhanVien" value="<%= TenNhanVien %>">
 
             <select name="PhuongThuc" class="form-select" required>
                 <option value="">-- Chọn Phương thức thanh toán --</option>
