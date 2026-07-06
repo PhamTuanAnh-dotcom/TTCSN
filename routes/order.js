@@ -240,7 +240,7 @@ router.get("/pending-orders", (req, res) => {
 });
 
 
-// Xác nhận thanh toán (Giữ nguyên logic sửa lỗi)
+// Xác nhận thanh toán 
 router.post("/pay", (req, res) => {
   const { MaBan, PhuongThuc, TongTien } = req.body;
   const MaHD = "HD" + Date.now();

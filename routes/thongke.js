@@ -39,7 +39,7 @@ router.get("/thongke", async (req, res) => {
         const [popularFoods] = await db.promise().query(sqlPopular, [fromDate, toDate]);
 
         const labels = revenue.map(r => r.Ngay);
-        const values = revenue.map(r => r.DoanhThu.map ? r.DoanhThu : Number(r.DoanhThu)); // Đảm bảo là số
+        const values = revenue.map(r => r.DoanhThu.map ? r.DoanhThu : Number(r.DoanhThu)); 
         const tongDoanhThu = values.reduce((a, b) => a + Number(b), 0).toFixed(2);
 
         res.render("thongke", {
