@@ -9,7 +9,15 @@ router.get("/thongke", async (req, res) => {
         // Mặc định hôm nay
         const fromDate = from || new Date().toISOString().slice(0, 10);
         const toDate   = to   || fromDate;
+        // Kiểm tra định dạng ngày
+        if (isNaN(Date.parse(fromDate)) || isNaN(Date.parse(toDate))) {
+        return res.status(400).send("Định dạng ngày không hợp lệ");
+        }
 
+        // Kiểm tra khoảng thời gian
+        if (new Date(fromDate) > new Date(toDate)) {
+        return res.status(400).send("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc");
+        }
         // 1️⃣ Doanh thu theo ngày
         const sqlRevenue = `
             SELECT DATE(NgayGio) AS Ngay, 

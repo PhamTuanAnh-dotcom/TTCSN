@@ -61,22 +61,50 @@ router.get("/", (req, res) => {
 
 // Cập nhật thông tin quản lý
 router.post("/update", (req, res) => {
+
     if (!req.session.user) return res.redirect("/");
 
     const userId = req.session.user.ID;
     const { HoTen, SDT, Gmail, CCCD } = req.body;
 
+    const hoTen = HoTen.trim();
+    const sdt = SDT.trim();
+    const gmail = Gmail.trim();
+    const cccd = CCCD.trim();
+    console.log("HoTen:", "[" + HoTen + "]");
+    console.log("Sau trim:", "[" + hoTen + "]");
+
+    if (!hoTen) {
+        return res.status(400).send("Họ tên không được để trống.");
+    }
+
+    if (!/^0\d{9}$/.test(sdt)) {
+        return res.status(400).send("Số điện thoại phải gồm 10 số và bắt đầu bằng 0.");
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(gmail)) {
+        return res.status(400).send("Email không hợp lệ.");
+    }
+
+    if (!/^\d{12}$/.test(cccd)) {
+        return res.status(400).send("CCCD phải gồm đúng 12 số.");
+    }
+
     const sql = `
-        UPDATE TaiKhoan 
+        UPDATE TaiKhoan
         SET HoTen = ?, SDT = ?, Gmail = ?, CCCD = ?
         WHERE ID = ? AND IDVaiTro = 'QL'
     `;
-    db.query(sql, [HoTen, SDT, Gmail, CCCD, userId], (err) => {
-        if (err) throw err;
+
+    db.query(sql, [hoTen, sdt, gmail, cccd, userId], (err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Lỗi máy chủ!");
+        }
+
         res.redirect("/home_ql");
     });
 });
-
 // Route Đổi mật khẩu
 router.post("/change-password", async (req, res) => {
     if (!req.session.user) return res.redirect("/");
