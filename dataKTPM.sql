@@ -171,4 +171,6 @@ DEFAULT 'Chua hoan thanh';
 ALTER TABLE Oder_Monan
 ADD TrangThai ENUM('Binh thuong','Da huy') DEFAULT 'Binh thuong';
 
+DROP DATABASE TTCSN;
+
 

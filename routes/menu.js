@@ -93,6 +93,9 @@ router.post("/them", (req, res) => {
 
               for (let i = 0; i < NguyenLieu.length; i++) {
                 if (!NguyenLieu[i]) continue;
+                if (!DinhLuong[i] || DinhLuong[i].toString().trim() === "") {
+        return res.status(400).send("Thiếu định lượng nguyên liệu");
+    }
 
                 data.push([
                   MaMon,

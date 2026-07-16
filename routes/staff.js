@@ -28,10 +28,8 @@ router.get("/xemchitietnhanvien/:id", (req, res) => {
     if (err) throw err;
 
     if (!results || results.length === 0) {
-      // Không có nhân viên nào → truyền null để EJS xử lý
-      return res.render("quanli_nhanvien", { TaiKhoan: null });
-    }
-
+    return res.status(404).send("Không tìm thấy nhân viên");
+}
     // Truyền đối tượng nhân viên đầu tiên
     res.render("quanli_nhanvien", { TaiKhoan: results[0] });
   });

@@ -81,17 +81,25 @@ router.get("/", (req, res) => {
     });
   });
 });
-
 // Hoàn thành order
 router.post("/hoan-thanh/:maOder", (req, res) => {
-    const maOder = req.params.maOder;
+    const { maOder } = req.params;
 
-    const sql = `UPDATE Oder SET TrangThai = 'Da hoan thanh' WHERE MaOder = ?`;
+    const sql = `
+        UPDATE Oder
+        SET TrangThai = 'Da hoan thanh'
+        WHERE MaOder = ?
+          AND TrangThai = 'Chua hoan thanh'
+    `;
 
     db.query(sql, [maOder], (err, result) => {
         if (err) {
             console.error(err);
             return res.status(500).send("Lỗi server");
+        }
+
+        if (result.affectedRows === 0) {
+            return res.send("Order đã hoàn thành hoặc đã bị hủy trước đó!");
         }
 
         return res.send(`Đã hoàn thành order ${maOder}`);
@@ -123,23 +131,64 @@ router.post("/cancel-order/:maOder", (req, res) => {
   });
 });
 // ❌ HỦY MÓN trong order
+// ❌ HỦY MÓN trong order
 router.post("/cancel-item", (req, res) => {
   const { MaOder, MaMon } = req.body;
 
-  const sql = `
+  if (!MaOder || !MaMon) {
+    return res.status(400).send("Thiếu mã Order hoặc mã món!");
+  }
+
+  // 1. Hủy món
+  const sqlCancel = `
     UPDATE Oder_Monan
     SET TrangThai = 'Da huy'
     WHERE MaOder = ? AND MaMon = ?
   `;
 
-  db.query(sql, [MaOder, MaMon], err => {
-    if (err) return res.status(500).send("Lỗi hủy món!");
+  db.query(sqlCancel, [MaOder, MaMon], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Lỗi hủy món!");
+    }
 
-    res.send("✅ Đã hủy món!");
+    // 2. Kiểm tra còn món nào chưa hủy không
+    const sqlCheck = `
+      SELECT COUNT(*) AS SoMonConLai
+      FROM Oder_Monan
+      WHERE MaOder = ?
+        AND (TrangThai IS NULL OR TrangThai <> 'Da huy')
+    `;
+
+    db.query(sqlCheck, [MaOder], (err2, result) => {
+      if (err2) {
+        console.error(err2);
+        return res.status(500).send("Lỗi kiểm tra Order!");
+      }
+
+      // Nếu vẫn còn món thì kết thúc
+      if (result[0].SoMonConLai > 0) {
+        return res.send("✅ Đã hủy món!");
+      }
+
+      // 3. Nếu tất cả món đã bị hủy -> hủy luôn Order
+      const sqlUpdateOrder = `
+        UPDATE Oder
+        SET TrangThai = 'Da huy'
+        WHERE MaOder = ?
+      `;
+
+      db.query(sqlUpdateOrder, [MaOder], (err3) => {
+        if (err3) {
+          console.error(err3);
+          return res.status(500).send("Lỗi cập nhật Order!");
+        }
+
+        return res.send("✅ Đã hủy toàn bộ Order!");
+      });
+    });
   });
 });
-
-
 // Cập nhật thông tin nhân viên bếp
 router.post("/update", (req, res) => {
   if (!req.session.user) return res.redirect("/");

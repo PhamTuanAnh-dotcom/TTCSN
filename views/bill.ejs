@@ -114,27 +114,36 @@
         </tr>
       </thead>
       <tbody>
-        <% let tongTien=0; %>
-          <% dsMonAn.forEach(mon=> {
+
+    <% let tongTien = 0; %>
+
+    <% if(dsMonAn.length === 0){ %>
+
+        <tr>
+            <td colspan="4" class="text-center text-danger">
+                Không còn món nào cần thanh toán.
+            </td>
+        </tr>
+
+    <% } else { %>
+
+        <% dsMonAn.forEach(mon => { 
             const thanhTien = mon.GiaBan * mon.SoLuong;
             tongTien += thanhTien;
-            %>
-            <tr>
-              <td>
-                <%= mon.TenMon %>
-              </td>
-              <td>
-                <%= mon.GiaBan.toLocaleString() %>
-              </td>
-              <td>
-                <%= mon.SoLuong %>
-              </td>
-              <td>
-                <%= thanhTien.toLocaleString() %>
-              </td>
-            </tr>
-            <% }) %>
-      </tbody>
+        %>
+
+        <tr>
+            <td><%= mon.TenMon %></td>
+            <td><%= mon.GiaBan.toLocaleString() %></td>
+            <td><%= mon.SoLuong %></td>
+            <td><%= thanhTien.toLocaleString() %></td>
+        </tr>
+
+        <% }) %>
+
+    <% } %>
+
+</tbody>
     </table>
 
     <p class="total">Tổng cộng: <%= tongTien.toLocaleString() %> ₫</p>

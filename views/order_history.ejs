@@ -1,5 +1,9 @@
 <h2>📜 Lịch sử Order hôm nay</h2>
 
+<% if (orders.length === 0) { %>
+    <p>Hôm nay chưa có Order nào.</p>
+<% } else { %>
+
 <table border="1" cellpadding="10">
     <tr>
         <th>Mã Order</th>
@@ -11,9 +15,14 @@
     <% orders.forEach(o => { %>
         <tr>
             <td><%= o.MaOder %></td>
-            <td><%= o.ThoiGian.toLocaleString() %></td>
+            <td><%= new Date(o.ThoiGian).toLocaleString("vi-VN") %></td>
             <td><%= o.MaBan %></td>
             <td><%= o.NhanVien %></td>
         </tr>
     <% }) %>
+
 </table>
+
+<% } %>
+
+<br>
