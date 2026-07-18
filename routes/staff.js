@@ -4,6 +4,17 @@ const db = require("../db");
 
 // Route hiển thị danh sách nhân viên
 router.get("/dsnhanvien", (req, res) => {
+   if (!req.session.user) {
+        return res.redirect("/auth/login");
+        // hoặc:
+        // return res.status(401).send("Bạn chưa đăng nhập");
+    }
+
+    // Không phải quản lý
+    if (req.session.user.IDVaiTro !== "QL") {
+        return res.status(403).send("Bạn không có quyền");
+    }
+
   const sql = `
     SELECT t.ID, t.HoTen, t.SDT, t.Gmail, t.CCCD, v.TenVaiTro
     FROM TaiKhoan t
