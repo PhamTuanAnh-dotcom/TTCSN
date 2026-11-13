@@ -7,17 +7,7 @@ app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 
 // Kết nối MySQL
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "abc123",
-  database: "TTCSN",
-});
-db.connect(err => {
-  if (err) throw err;
-  console.log("Kết nối MySQL thành công!");
-});
-
+const db = require("./db");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(
